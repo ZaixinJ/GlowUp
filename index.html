@@ -101,20 +101,20 @@ h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.3rem, 8vw
 
 .check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
 .check:last-child { border-bottom: 0; }
-.check input { appearance: none; margin: 2px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; transition: background .15s, border-color .15s; }
-.check input::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
-.check input:checked { background: var(--cocoa); border-color: var(--cocoa); }
-.check input:checked::after { opacity: 1; }
-.check input:checked + span { color: var(--muted); }
+.check > input[type="checkbox"] { appearance: none; margin: 2px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; transition: background .15s, border-color .15s; }
+.check > input[type="checkbox"]::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.check > input[type="checkbox"]:checked { background: var(--cocoa); border-color: var(--cocoa); }
+.check > input[type="checkbox"]:checked::after { opacity: 1; }
+.check > input[type="checkbox"]:checked + span { color: var(--muted); }
 .check span { min-width: 0; }
 
 .tasks { display: flex; flex-direction: column; }
 .task { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
 .task:last-child { border-bottom: 1px solid var(--line); }
-.task input { appearance: none; margin: 3px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; }
-.task input::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
-.task input:checked { background: var(--cocoa); border-color: var(--cocoa); }
-.task input:checked::after { opacity: 1; }
+.task > input[type="checkbox"] { appearance: none; margin: 3px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; }
+.task > input[type="checkbox"]::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.task > input[type="checkbox"]:checked { background: var(--cocoa); border-color: var(--cocoa); }
+.task > input[type="checkbox"]:checked::after { opacity: 1; }
 .task .body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .task .label { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--cocoa); }
 .task p { margin: 0; max-width: 62ch; }
@@ -122,6 +122,16 @@ h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.3rem, 8vw
 .task .quote { font-family: var(--display); font-style: italic; font-size: 1.3rem; line-height: 1.3; letter-spacing: -0.01em; }
 .vid { align-self: flex-start; margin-top: 6px; font-size: 13px; font-weight: 500; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
 .vid:hover { border-color: var(--cocoa); }
+.morning { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-block: 18px; border-block: 1px solid var(--line); }
+.morning > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.morning .label { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--cocoa); }
+.morning p { margin: 0; }
+.morning .tip { font-size: 13px; color: var(--muted); }
+@media (max-width: 560px) { .morning { grid-template-columns: 1fr; gap: 16px; } }
+.spadd { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.spform { width: 100%; background: var(--soft); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.spform .in, .spform textarea { background: var(--bg); }
+.cell.sp .n::after { content: ""; display: block; width: 4px; height: 4px; margin: 2px auto 0; border-radius: 50%; background: var(--court); }
 .vids { display: flex; flex-wrap: wrap; gap: 6px; }
 .special { background: var(--soft); border-radius: 18px; padding: 20px; display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 20px; align-items: start; }
 .special svg { width: 100%; height: auto; aspect-ratio: 1; }
@@ -304,7 +314,7 @@ const DAYS = [
     exp:"Notice how your skin feels. Is your forehead oily? Do your cheeks feel dry or comfortable? Observe rather than judge.",
     extra:"Do a 15-minute Sunday reset. Clear one surface, organise your schoolbag and prepare for Monday." },
   { d:"2026-10-12", t:"The school-day glow",
-    eat:"Look for protein at the canteen: chicken, fish, eggs, tofu, meat, beans or yong tau foo. Keep your usual rice or noodles as well.",
+    eat:"Look for protein at the canteen: chicken, fish, eggs, tofu, meat or beans. Keep your usual rice or noodles as well.",
     feel:"My body deserves fuel for everything I ask of it.",
     move:"Recovery day. Take a relaxed walk or do some gentle stretching.",
     exp:"Choose one school-approved signature detail: a hairstyle, neat shoes, a favourite accessory, or stationery in colours you love." },
@@ -340,7 +350,7 @@ const DAYS = [
     move:"Recovery day. Gentle stretching, a relaxed walk, or another comfortable activity.",
     exp:"Spend 15 minutes preparing for the school week. Organise your schoolbag, choose accessories and make your desk more pleasant." },
   { d:"2026-10-19", t:"Canteen confidence",
-    eat:"Look for plant-based protein, such as tofu, tempeh, chickpeas, lentils, beans or dhal. Yong tau foo may be one option.",
+    eat:"Look for plant-based protein, such as tofu, tempeh, chickpeas, lentils, beans or dhal.",
     feel:"Taking care of myself should work with my life, not against it.",
     move:"Beginner back strength and posture, around 10 minutes.", vid:["Eleni Fit · beginner back & posture","https://www.youtube.com/results?search_query=Eleni+Fit+beginner+back+posture+workout"],
     exp:"Identify two or three canteen meals you enjoy that keep you going through the afternoon. Make them your convenient favourites." },
@@ -369,7 +379,7 @@ const DAYS = [
     feel:"I don't need to become a different person. I can build on who I already am.",
     move:"Repeat your favourite beginner session from the past two weeks, or rest if your body needs it. Don't add workouts just to finish a streak.",
     exp:"Spend 15 minutes reviewing your fortnight using the questions below.", review:true,
-    extra:"Tomorrow is the Dragonfruit Music Festival. Lay out your outfit, pack your bag, snacks and water bottle, and get to bed on time." }
+    extra:"Tomorrow is your big day. Lay out your outfit, pack your bag, snacks and water bottle, and get to bed on time." }
 ];
 const FOUND = [
   ["Morning", [["m1","Gentle cleanse or rinse, moisturiser, SPF 30+"],["m2","Get ready in a way that feels comfortable and confident"],["m3","Breakfast if you're hungry and have time"]]],
@@ -431,15 +441,33 @@ const ART = {
   star: `<path d="M60 14l13 30 32 3-24 21 7 32-28-17-28 17 7-32-24-21 32-3z" fill="#e8cf95" stroke="var(--cocoa)" stroke-width="2" stroke-linejoin="round"/>`,
   notebook: `<rect class="f-cocoa" x="26" y="14" width="64" height="92" rx="6"/><rect x="36" y="30" width="44" height="18" rx="3" fill="#f6f3ee" opacity=".85"/>` + [24,38,52,66,80,94].map(y => `<circle cx="26" cy="${y}" r="4" fill="none" stroke="var(--muted)" stroke-width="2"/>`).join("") + `<path d="M98 30l8 6-20 64-8 4 0-9z" fill="#e8cf95" stroke="var(--muted)" stroke-width="1.4"/>`
 };
-/* Special days: add an entry here for any date (YYYY-MM-DD) */
-const SPECIALS = {
-  "2026-10-11": {
-    kicker: "Special day · tennis", title: "Rolex Shanghai Masters", art: "tennis",
-    text: "Have the best time! All the walking around the venue counts as today's movement, so the full-body workout can wait if you're out all day.",
-    items: [["sp1","SPF before you go, plus a cap or sunglasses for the outside courts"],["sp2","Water bottle and a snack in your bag"],["sp3","Comfortable shoes for all the walking"],["sp4","Eat a proper meal, even if the schedule is busy"]],
-    note: "Favourite moment or player of the day"
-  }
-};
+/* Morning: a breakfast idea and a song for each day (Day 1–14, then win day, then a rotation) */
+const BREAKFAST = [
+  "Yoghurt bowl with granola, banana and a drizzle of honey. Good fuel for a busy Sunday.",
+  "Latte + a slice of toast with peanut butter.",
+  "Grab-and-go yoghurt cup with berries and a handful of granola.",
+  "Overnight oats with milk and banana. Make them the night before.",
+  "Latte + a boiled egg and a piece of fruit.",
+  "Toast with scrambled eggs, or an egg sandwich from the bakery.",
+  "Slow Saturday pancakes with yoghurt and strawberries.",
+  "Avocado toast with an egg on top.",
+  "Latte + banana bread or a muffin, with a small yoghurt.",
+  "Yoghurt bowl with kiwi, granola and a few nuts.",
+  "Latte + a cheese toastie.",
+  "Overnight oats with peanut butter and apple.",
+  "A bakery sandwich with a glass of milk or a latte.",
+  "French toast with fruit. It's Saturday, take your time.",
+  "Eggs on toast, a banana and a yoghurt. Performing takes energy, so eat properly and pack snacks."
+];
+const BREAKFAST_AFTER = ["Yoghurt bowl with fruit and granola.","Latte + toast with peanut butter.","Overnight oats with banana.","Eggs on toast with fruit.","Latte + a boiled egg and a banana.","A bakery sandwich and a glass of milk.","Avocado toast with an egg."];
+const SONGS = [
+  ["Here Comes the Sun","The Beatles"],["Espresso","Sabrina Carpenter"],["Sunday Best","Surfaces"],["Touch","KATSEYE"],
+  ["Lovely Day","Bill Withers"],["Levitating","Dua Lipa"],["Gnarly","KATSEYE"],["Banana Pancakes","Jack Johnson"],
+  ["Good Days","SZA"],["Watermelon Sugar","Harry Styles"],["Gabriela","KATSEYE"],["golden hour","JVKE"],
+  ["Debut","KATSEYE"],["Shake It Off","Taylor Swift"],["Unstoppable","Sia"]
+];
+const SONGS_AFTER = [["Sunday Morning","Maroon 5"],["Put Your Records On","Corinne Bailey Rae"],["Juno","Sabrina Carpenter"],["Flowers","Miley Cyrus"],["Bags","Clairo"],["Touch","KATSEYE"],["Love Story (Taylor's Version)","Taylor Swift"]];
+const SP_ICONS = [["star","Star"],["notes","Music"],["tennis","Tennis"],["dragon","Dragon fruit"],["sneaker","Trainers"],["book","Book"],["brush","Art"],["hanger","Outfit"],["mirror","Mirror"]];
 const DEFAULT_ART = [["mat","go for a walk / move your body"],["glass","drink water through the day"],["oats","eat nourishing, satisfying meals"]];
 const DAY_ART = [
   [["kiwi","a kiwi for vitamin C"],["mat","10-min full body"],["mirror","notice your skin"]],
@@ -472,7 +500,7 @@ const TODAY = iso(new Date());
 const LAST = DAYS[13].d;
 const WIN = "2026-10-25";
 
-let state = { days:{}, review:{}, keep:["","",""], faves:[] };
+let state = { days:{}, review:{}, keep:["","",""], faves:[], specials:{}, festName:"" };
 const isSchool = k => ![0,6].includes(parse(k).getDay());
 let sel = TODAY < DAYS[0].d ? DAYS[0].d : TODAY;
 
@@ -490,7 +518,7 @@ const WIN_TASKS = [
 function keysFor(k) {
   if (k === WIN) return ["feel", ...WIN_TASKS.map(t => t[0])];
   const di = DAYS.find(x => x.d === k);
-  const sp = SPECIALS[k] ? SPECIALS[k].items.map(i => i[0]) : [];
+  const sp = state.specials[k] ? state.specials[k].items.map((_, i) => "sp" + i) : [];
   if (di) return [...FKEYS, "eat","feel","move","exp", ...(di.extra ? ["extra"] : []), ...sp];
   return [...FKEYS, ...state.keep.map((h,i) => h.trim() ? "k"+i : null).filter(Boolean), ...sp];
 }
@@ -505,17 +533,17 @@ function renderStrip() {
   let h = '<span class="weekmark">Week 1 · Nourish &amp; revive</span><span class="weekmark w2">Week 2 · Express &amp; glow</span>';
   DAYS.forEach(x => {
     const dt = parse(x.d), p = progress(x.d);
-    h += `<button class="cell${x.d===TODAY?" today":""}" data-go="${x.d}" aria-current="${x.d===sel}" aria-label="${WD[dt.getDay()]} ${dt.getDate()} October, ${p.done} of ${p.total} done">
+    h += `<button class="cell${x.d===TODAY?" today":""}${state.specials[x.d]?" sp":""}" data-go="${x.d}" aria-current="${x.d===sel}" aria-label="${WD[dt.getDay()]} ${dt.getDate()} October, ${p.done} of ${p.total} done">
       <span class="wd">${WD[dt.getDay()].slice(0,2)}</span><span class="n">${dt.getDate()}</span><span class="bar"><i style="width:${p.total?p.done/p.total*100:0}%"></i></span></button>`;
   });
   const wp = progress(WIN);
-  h += `<button class="cell win${WIN===TODAY?" today":""}" data-go="${WIN}" aria-current="${sel===WIN}" aria-label="Sunday 25 October, Dragonfruit Music Festival"><span class="wd">fest</span><span class="n">25</span><span class="bar"><i style="width:${wp.done/wp.total*100}%;background:var(--pink)"></i></span></button>`;
+  h += `<button class="cell win${WIN===TODAY?" today":""}" data-go="${WIN}" aria-current="${sel===WIN}" aria-label="Sunday 25 October, win day"><span class="wd">fest</span><span class="n">25</span><span class="bar"><i style="width:${wp.done/wp.total*100}%;background:var(--pink)"></i></span></button>`;
   const after = sel > WIN;
   h += `<button class="cell after" data-go="after" aria-current="${after}" aria-label="After the fortnight"><span class="wd">26+</span><span class="n">after</span><span class="bar"><i style="width:0"></i></span></button>`;
   strip.innerHTML = h;
   const shown = DAYS.filter(x => progress(x.d).done > 0).length;
   const left = Math.round((parse(WIN) - parse(TODAY)) / 864e5);
-  document.getElementById("countdown").textContent = left > 1 ? `${left} days until the Dragonfruit Music Festival` : left === 1 ? "The Dragonfruit Music Festival is tomorrow!" : left === 0 ? "It's festival day! Go glow." : "";
+  document.getElementById("countdown").textContent = left > 1 ? `${left} days until ${state.festName || "your big day"}` : left === 1 ? `${state.festName || "Your big day"} is tomorrow!` : left === 0 ? "It's your big day! Go glow." : "";
   document.getElementById("overall").textContent = shown ? `You showed up on ${shown} of 14 days` : "Tap a day to open it";
 }
 
@@ -552,7 +580,7 @@ function favourites() {
   return `<div class="reflect"><h3 class="eyebrow" style="margin:0">Canteen favourites</h3>
     <span class="count">Meals that kept you full and happy through the afternoon.</span>
     ${state.faves.length ? `<ul class="faves">${state.faves.map((f, i) => `<li><span>${esc(f)}</span><button class="x" data-unfave="${i}" aria-label="Remove ${esc(f)}">×</button></li>`).join("")}</ul>` : ""}
-    <form class="addrow" id="faveForm"><input class="in" id="faveIn" placeholder="e.g. yong tau foo with noodles" aria-label="Add a canteen favourite"><button class="btn" type="submit">Add</button></form></div>`;
+    <form class="addrow" id="faveForm"><input class="in" id="faveIn" placeholder="e.g. chicken rice with vegetables" aria-label="Add a canteen favourite"><button class="btn" type="submit">Add</button></form></div>`;
 }
 function reviewBlock() {
   return `<div class="reflect"><h3 class="eyebrow" style="margin:0">Fortnight review</h3>
@@ -573,12 +601,33 @@ const HERO = `<svg class="hero" viewBox="0 0 240 150" aria-hidden="true">
   <g class="note-l" transform="translate(4 40) scale(.5)">${ART.notes}</g>
   <g class="note-r" transform="translate(178 30) scale(.48)">${ART.notes}</g>
 </svg>`;
+function morning(k) {
+  const di = DAYS.findIndex(x => x.d === k);
+  const n = Math.round((parse(k) - parse(DAYS[0].d)) / 864e5);
+  const b = di >= 0 ? BREAKFAST[di] : k === WIN ? BREAKFAST[14] : BREAKFAST_AFTER[n % BREAKFAST_AFTER.length];
+  const [song, artist] = di >= 0 ? SONGS[di] : k === WIN ? SONGS[14] : SONGS_AFTER[n % SONGS_AFTER.length];
+  const latte = b.startsWith("Latte") ? `<p class="tip">On latte mornings, add a bite so coffee isn't your only fuel until lunch.</p>` : "";
+  return `<div class="morning">
+    <div><span class="label">Breakfast idea</span><p>${esc(b)}</p>${latte}</div>
+    <div><span class="label">Morning song</span><p><b>${esc(song)}</b> · ${esc(artist)}</p>
+      <a class="vid" href="https://music.163.com/#/search/m/?s=${encodeURIComponent(song + " " + artist)}&type=1" target="_blank" rel="noopener">Play on NetEase ↗</a></div>
+  </div>`;
+}
 function special(k) {
-  const sp = SPECIALS[k]; if (!sp) return "";
-  return `<div class="special"><svg viewBox="0 0 120 120" aria-hidden="true">${ART[sp.art] || ""}</svg><div class="body">
-    <span class="eyebrow">${esc(sp.kicker)}</span><h3>${esc(sp.title)}</h3><p>${esc(sp.text)}</p>
-    <div class="group" style="margin-top:6px">${sp.items.map(i => checkRow(k, i[0], i[1])).join("")}</div>
-    ${sp.note ? `<div class="field" style="margin-top:6px"><label for="spnote-${k}">${esc(sp.note)}</label><input class="in" id="spnote-${k}" data-f="spnote"></div>` : ""}
+  const sp = state.specials[k];
+  if (!sp) return `<div class="spadd"><button class="btn" type="button" data-addsp>+ Make this a special day</button>
+    <form class="spform" id="spForm" hidden>
+      <div class="field"><label for="sp-title">What's happening?</label><input class="in" id="sp-title" required placeholder="e.g. Tennis with friends"></div>
+      <div class="field"><label for="sp-text">A note to yourself <span class="rl">(optional)</span></label><input class="in" id="sp-text" placeholder="e.g. Walking around counts as movement today"></div>
+      <div class="field"><label for="sp-items">Little checklist, one per line <span class="rl">(optional)</span></label><textarea id="sp-items" placeholder="SPF and a cap&#10;Water bottle and a snack&#10;Comfy shoes"></textarea></div>
+      <div class="field"><label for="sp-art">Drawing</label><select class="in" id="sp-art">${SP_ICONS.map(([a, l]) => `<option value="${a}">${l}</option>`).join("")}</select></div>
+      <div class="addrow"><button class="btn" type="submit">Save special day</button><button class="btn" type="button" data-addsp>Cancel</button></div>
+    </form></div>`;
+  return `<div class="special"><svg viewBox="0 0 120 120" aria-hidden="true">${ART[sp.art] || ART.star}</svg><div class="body">
+    <span class="eyebrow">Special day</span><h3>${esc(sp.title)}</h3>${sp.text ? `<p>${esc(sp.text)}</p>` : ""}
+    ${sp.items.length ? `<div class="group" style="margin-top:6px">${sp.items.map((t, i) => checkRow(k, "sp" + i, t)).join("")}</div>` : ""}
+    <div class="field" style="margin-top:6px"><label for="spnote-${k}">Favourite moment of the day</label><input class="in" id="spnote-${k}" data-f="spnote"></div>
+    <div><button class="x" style="font-size:13px" data-delsp>Remove special day</button></div>
   </div></div>`;
 }
 function festival(k) {
@@ -592,7 +641,8 @@ function festival(k) {
   }).join("");
   return `<div class="fest">${HERO}
       <span class="eyebrow">Win day · Sunday, 25 October${k===TODAY?" · today":""}</span>
-      <h2>Dragonfruit Music Festival</h2>
+      <h2 id="festTitle">${esc(state.festName || "Your big day")}</h2>
+      <input class="in" id="festName" data-fest style="max-width:340px;text-align:center" placeholder="Name your big day" aria-label="Name your big day">
       <p>Two performances, and fourteen days of looking after yourself behind them. You don't need to be perfect today. You get to enjoy it.</p>
       <span class="count"><span id="dc"></span></span></div>
     <div class="wins">
@@ -600,6 +650,7 @@ function festival(k) {
       <div><b>${moved}</b><span>times you moved</span></div>
       <div><b>${outfits}</b><span>outfits you noted</span></div>
     </div>
+    ${morning(k)}${special(k)}
     <div class="tasks">${taskRow(k,"feel","Feel",`<p class="quote">“I've already done the work. Today I get to shine and have fun.”</p>`)}${tasks}</div>
     ${reflection(k)}
     <div class="nav"><button class="btn" data-go="${LAST}">← Day 14</button><button class="btn" data-go="after">After →</button></div>`;
@@ -613,7 +664,7 @@ function renderDay() {
     const x = DAYS[di];
     const notice = TODAY < DAYS[0].d && di === 0 ? `<div class="notice">Your glow-up starts ${TODAY === addDays(DAYS[0].d,-1) ? "tomorrow" : "on Sunday, 11 October"}. Have a look at Day 1 now.</div>` : "";
     h += `<div class="day-head"><span class="eyebrow">Day ${di+1} · Week ${di<7?"1 · Nourish & revive":"2 · Express & glow"}</span>
-      <h2><em>${esc(x.t)}</em></h2><span class="count">${dateLine}${k===TODAY?" · today":""} · <span id="dc"></span></span></div>${notice}${objects(DAY_ART[di])}${special(k)}`;
+      <h2><em>${esc(x.t)}</em></h2><span class="count">${dateLine}${k===TODAY?" · today":""} · <span id="dc"></span></span></div>${notice}${objects(DAY_ART[di])}${morning(k)}${special(k)}`;
     let tasks = taskRow(k,"eat","Eat",`<p>${esc(x.eat)}</p>`)
       + taskRow(k,"feel","Feel",`<p class="quote">“${esc(x.feel)}”</p>`)
       + taskRow(k,"move","Move",`<p>${esc(x.move)}</p>${x.vid?`<div class="vids"><a class="vid" href="${x.vid[1]}" target="_blank" rel="noopener">YouTube: ${esc(x.vid[0])} ↗</a><a class="vid" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(x.vid[0].replace(" · "," "))}" target="_blank" rel="noopener">Bilibili ↗</a></div>`:""}${workout(k)}`)
@@ -630,7 +681,7 @@ function renderDay() {
   } else {
     const kept = state.keep.map((t,i)=>[t.trim(),i]).filter(p=>p[0]);
     h += `<div class="day-head"><span class="eyebrow">After the fortnight · keep going</span>
-      <h2><em>${dateLine}</em></h2><span class="count">${k===TODAY?"Today · ":""}<span id="dc"></span></span></div>${objects(DEFAULT_ART)}${special(k)}
+      <h2><em>${dateLine}</em></h2><span class="count">${k===TODAY?"Today · ":""}<span id="dc"></span></span></div>${objects(DEFAULT_ART)}${morning(k)}${special(k)}
       <div class="notice">Keep the habits that help you feel well and let go of the ones that feel like pressure. ${kept.length ? "" : "Add the three habits you want to keep below and they'll show up here every day."}</div>`;
     if (kept.length) h += `<div class="tasks">${kept.map(([t,i]) => taskRow(k,"k"+i,"Habit to keep",`<p>${esc(t)}</p>`)).join("")}</div>`;
     h += `<div class="group"><h3>Movement today</h3>${workout(k)}</div>`;
@@ -643,6 +694,7 @@ function renderDay() {
   const ds = dayState(k);
   const note = el.querySelector("[data-note]"); if (note) note.value = ds.note || "";
   el.querySelectorAll("[data-f]").forEach(t => t.value = ds[t.dataset.f] || "");
+  const fn = el.querySelector("[data-fest]"); if (fn) fn.value = state.festName || "";
   el.querySelectorAll("[data-review]").forEach(t => t.value = state.review[t.dataset.review] || "");
   el.querySelectorAll("[data-keep]").forEach(t => t.value = state.keep[+t.dataset.keep] || "");
   updateCount();
@@ -670,10 +722,21 @@ document.addEventListener("click", e => {
     document.querySelectorAll(`[data-chip="${f}"]`).forEach(b => b.setAttribute("aria-pressed", Array.isArray(ds[f]) ? ds[f].includes(b.dataset.val) : ds[f] === b.dataset.val));
     save(); return;
   }
+  if (e.target.closest("[data-addsp]")) { const f = document.getElementById("spForm"); f.hidden = !f.hidden; if (!f.hidden) document.getElementById("sp-title").focus(); return; }
+  if (e.target.closest("[data-delsp]")) { delete state.specials[sel]; render(); save(); return; }
   const rm = e.target.closest("[data-unfave]");
   if (rm) { state.faves.splice(+rm.dataset.unfave, 1); renderDay(); save(); }
 });
 document.addEventListener("submit", e => {
+  if (e.target.id === "spForm") {
+    e.preventDefault();
+    const title = document.getElementById("sp-title").value.trim(); if (!title) return;
+    state.specials[sel] = {
+      title, text: document.getElementById("sp-text").value.trim(), art: document.getElementById("sp-art").value,
+      items: document.getElementById("sp-items").value.split("\n").map(t => t.trim()).filter(Boolean).slice(0, 8)
+    };
+    render(); save(); return;
+  }
   if (e.target.id !== "faveForm") return;
   e.preventDefault();
   const v = document.getElementById("faveIn").value.trim();
@@ -690,6 +753,7 @@ document.addEventListener("input", e => {
   const t = e.target; if (!t.dataset) return;
   if (t.dataset.note !== undefined) dayState(sel).note = t.value;
   else if (t.dataset.f) dayState(sel)[t.dataset.f] = t.value;
+  else if (t.dataset.fest !== undefined) { state.festName = t.value; document.getElementById("festTitle").textContent = t.value.trim() || "Your big day"; renderStrip(); }
   else if (t.dataset.review) state.review[t.dataset.review] = t.value;
   else if (t.dataset.keep !== undefined) state.keep[+t.dataset.keep] = t.value;
   else return;
@@ -709,7 +773,7 @@ function save() {
 }
 function merge(s) {
   if (!s || typeof s !== "object") return;
-  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [] };
+  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "" };
 }
 try { merge(JSON.parse(localStorage.getItem(LS) || "null")); } catch (_) {}
 render();
