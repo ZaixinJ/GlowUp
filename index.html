@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Spring's 14-Day Glow-Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+/* Layout: one quiet white column like a printed checklist card; a 14-day date strip on top, the chosen day below, guides folded away at the end. */
+:root {
+  --bg: #ffffff;
+  --ink: #161312;
+  --muted: #7b726d;
+  --line: #ebe6e3;
+  --soft: #f7f4f2;
+  --cocoa: #5b4034;
+  --cocoa-ink: #ffffff;
+  --water: #dfe9ee;
+  --oat: #e9dcc8;
+  --pink: #d8578a;
+  --court: #4f8a3a;
+  --display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --body: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131110; --ink: #f2ece8; --muted: #a39892; --line: #2b2523; --soft: #1c1816;
+    --cocoa: #c9a28c; --cocoa-ink: #1a1412; --water: #2a363c; --oat: #3a3129; --pink: #ec7fab; --court: #9cc67a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131110; --ink: #f2ece8; --muted: #a39892; --line: #2b2523; --soft: #1c1816;
+  --cocoa: #c9a28c; --cocoa-ink: #1a1412; --water: #2a363c; --oat: #3a3129; --pink: #ec7fab; --court: #9cc67a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 20px; padding-block: 56px 80px; display: flex; flex-direction: column; gap: 56px; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--cocoa); outline-offset: 3px; border-radius: 4px; }
+
+/* Hero */
+header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.3rem, 8vw, 3.9rem); line-height: 1; letter-spacing: -0.035em; margin: 0; text-transform: uppercase; text-wrap: balance; }
+.script { font-family: var(--display); font-style: italic; font-size: clamp(2rem, 7vw, 3.3rem); line-height: 1; letter-spacing: -0.04em; }
+.dates { margin-top: 18px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.lede { max-width: 46ch; margin: 14px auto 0; color: var(--muted); text-wrap: balance; }
+
+/* Three objects */
+.objects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center; }
+.obj { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.obj svg { width: 100%; max-width: 132px; height: auto; aspect-ratio: 1; }
+.obj b { font-weight: 600; font-size: 14px; line-height: 1.3; text-wrap: balance; }
+.f-cocoa { fill: var(--cocoa); } .f-cocoa2 { fill: var(--cocoa); opacity: .78; }
+.f-water { fill: var(--water); } .s-ink { stroke: var(--muted); fill: none; stroke-width: 1.4; }
+.f-oat { fill: var(--oat); } .f-bowl { fill: var(--soft); stroke: var(--line); stroke-width: 2; }
+.f-ink { fill: var(--muted); } .f-banana { fill: #efe2bb; } .f-nut { fill: #8a5a3c; } .f-seed { fill: #8b9a5b; }
+
+/* Strip */
+.strip-wrap { display: flex; flex-direction: column; gap: 14px; }
+.strip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.eyebrow { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.strip { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; }
+.cell { appearance: none; border: 0; background: none; color: var(--ink); font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-radius: 10px; font-variant-numeric: tabular-nums; }
+.cell .wd { font-size: 10px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.cell .n { font-size: 15px; font-weight: 500; }
+.cell .bar { width: 60%; height: 3px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.cell .bar i { display: block; height: 100%; background: var(--cocoa); width: 0; transition: width .3s; }
+.cell:hover { background: var(--soft); }
+.cell[aria-current="true"] { background: var(--ink); color: var(--bg); }
+.cell[aria-current="true"] .wd { color: var(--bg); opacity: .7; }
+.cell.today .n { text-decoration: underline; text-underline-offset: 4px; }
+.cell.after .n { font-family: var(--display); font-style: italic; font-size: 17px; }
+.weekmark { grid-column: span 7; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-left: 4px; }
+.weekmark.w2 { grid-column: span 9; }
+.cell.after, .cell.win { grid-row: 2; }
+.cell.win .n, .cell.win .wd { color: var(--pink); }
+.cell.win .bar { background: var(--pink); opacity: .35; }
+.cell.win[aria-current="true"] { background: var(--pink); }
+.cell.win[aria-current="true"] .n, .cell.win[aria-current="true"] .wd { color: #fff; }
+@media (max-width: 560px) {
+  .strip { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .weekmark { display: none; }
+  .cell.after, .cell.win { grid-row: auto; }
+}
+
+/* Day */
+.day { display: flex; flex-direction: column; gap: 36px; }
+.day-head { display: flex; flex-direction: column; gap: 4px; }
+.day-head h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+.day-head h2 em { font-style: italic; }
+.notice { background: var(--soft); border-radius: 12px; padding: 12px 16px; font-size: 14px; color: var(--muted); }
+.count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.group { display: flex; flex-direction: column; gap: 4px; }
+.group h3 { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+@media (max-width: 640px) { .cols { grid-template-columns: 1fr; gap: 24px; } }
+
+.check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.check:last-child { border-bottom: 0; }
+.check input { appearance: none; margin: 2px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; transition: background .15s, border-color .15s; }
+.check input::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.check input:checked { background: var(--cocoa); border-color: var(--cocoa); }
+.check input:checked::after { opacity: 1; }
+.check input:checked + span { color: var(--muted); }
+.check span { min-width: 0; }
+
+.tasks { display: flex; flex-direction: column; }
+.task { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+.task:last-child { border-bottom: 1px solid var(--line); }
+.task input { appearance: none; margin: 3px 0 0; width: 20px; height: 20px; border: 1.5px solid var(--muted); border-radius: 50%; display: grid; place-content: center; cursor: pointer; }
+.task input::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--cocoa-ink); border-bottom: 2px solid var(--cocoa-ink); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.task input:checked { background: var(--cocoa); border-color: var(--cocoa); }
+.task input:checked::after { opacity: 1; }
+.task .body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.task .label { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--cocoa); }
+.task p { margin: 0; max-width: 62ch; }
+.task ul { margin: 4px 0 0; padding-left: 18px; }
+.task .quote { font-family: var(--display); font-style: italic; font-size: 1.3rem; line-height: 1.3; letter-spacing: -0.01em; }
+.vid { align-self: flex-start; margin-top: 6px; font-size: 13px; font-weight: 500; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
+.vid:hover { border-color: var(--cocoa); }
+.vids { display: flex; flex-wrap: wrap; gap: 6px; }
+.special { background: var(--soft); border-radius: 18px; padding: 20px; display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 20px; align-items: start; }
+.special svg { width: 100%; height: auto; aspect-ratio: 1; }
+.special .body { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.special .eyebrow { color: var(--court); }
+.special h3 { margin: 0; font-family: var(--display); font-weight: 400; font-style: italic; font-size: 1.7rem; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+.special p { margin: 0; max-width: 60ch; }
+.special .check { border-color: var(--line); }
+@media (max-width: 520px) { .special { grid-template-columns: 1fr; } .special svg { max-width: 88px; } }
+
+/* Reflection */
+.reflect { display: flex; flex-direction: column; gap: 14px; }
+.moods { display: flex; flex-wrap: wrap; gap: 8px; }
+.mood { appearance: none; font: inherit; font-size: 14px; color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.mood[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+textarea, .field input { width: 100%; font: inherit; color: var(--ink); background: var(--soft); border: 1px solid transparent; border-radius: 12px; padding: 12px 14px; resize: vertical; }
+textarea { min-height: 84px; }
+textarea:focus, .field input:focus { outline: none; border-color: var(--cocoa); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 14px; font-weight: 500; }
+.keep { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .keep { grid-template-columns: 1fr; } }
+
+.nav { display: flex; justify-content: space-between; gap: 12px; }
+.btn { appearance: none; font: inherit; font-size: 14px; color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn[disabled] { opacity: .35; cursor: default; }
+
+/* Guides */
+.guides { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+details { border-bottom: 1px solid var(--line); }
+summary { cursor: pointer; list-style: none; padding: 18px 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--display); font-size: 1.35rem; letter-spacing: -0.02em; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-family: var(--body); font-size: 1.1rem; color: var(--muted); }
+details[open] summary::after { content: "–"; }
+.dbody { padding-bottom: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 64ch; }
+.dbody p, .dbody ul { margin: 0; }
+.dbody ul { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.sched { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; font-variant-numeric: tabular-nums; }
+.sched span:nth-child(odd) { color: var(--muted); }
+
+footer { text-align: center; color: var(--muted); font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.saved { font-size: 12px; }
+/* Daily drawings + trackers */
+.objects { padding-block: 8px; }
+.s-line { fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.f-paper { fill: var(--soft); stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
+.row { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; align-items: center; }
+.rl { font-size: 13px; color: var(--muted); }
+@media (max-width: 480px) { .row { grid-template-columns: 1fr; gap: 6px; } }
+.in { width: 100%; font: inherit; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.in:focus { outline: none; border-color: var(--cocoa); }
+.wo { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.wo .rl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.countdown { margin-top: 10px; font-size: 14px; color: var(--pink); font-weight: 500; }
+.fest { position: relative; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; padding-block: 8px 4px; }
+.fest svg.hero { width: 100%; max-width: 340px; height: auto; }
+.fest .eyebrow { color: var(--pink); }
+.fest h2 { font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(2rem, 7vw, 3rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+.fest p { margin: 0; max-width: 46ch; color: var(--muted); text-wrap: balance; }
+.fest .note-l, .fest .note-r { animation: bob 3.2s ease-in-out infinite; transform-box: fill-box; }
+.fest .note-r { animation-delay: -1.6s; }
+@keyframes bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
+.confetti rect, .confetti circle { animation: twinkle 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.confetti :nth-child(3n) { animation-delay: -.9s; } .confetti :nth-child(3n+1) { animation-delay: -1.7s; }
+@keyframes twinkle { 50% { opacity: .35; transform: scale(.7) rotate(25deg); } }
+.wins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; text-align: center; }
+.wins div { background: var(--soft); border-radius: 14px; padding: 16px 8px; display: flex; flex-direction: column; gap: 2px; }
+.wins b { font-family: var(--display); font-size: 2rem; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; }
+.wins span { font-size: 13px; color: var(--muted); }
+.task .label.pink { color: var(--pink); }
+.moods.sm .mood { font-size: 13px; padding: 4px 12px; }
+.faves { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.faves li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.faves li span { min-width: 0; }
+.x { appearance: none; border: 0; background: none; color: var(--muted); font: inherit; font-size: 18px; line-height: 1; cursor: pointer; padding: 4px 8px; border-radius: 999px; }
+.x:hover { color: var(--ink); background: var(--soft); }
+.addrow { display: flex; gap: 8px; }
+.addrow .in { flex: 1; min-width: 0; }
+.backup { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.backup .btn { font-size: 13px; padding: 6px 14px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>14-Day Glow-Up</h1>
+    <div class="script">for Spring</div>
+    <div class="dates">October 11 – 24, 2026</div>
+    <div class="countdown" id="countdown"></div>
+    <p class="lede">A personal reset for skin, style, routines, strength and self-expression. The goal is to build on who you already are.</p>
+  </header>
+
+  <section class="strip-wrap" aria-label="Choose a day">
+    <div class="strip-head">
+      <span class="eyebrow">Your fortnight</span>
+      <span class="count" id="overall"></span>
+    </div>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section class="day" id="day" aria-live="polite"></section>
+
+  <section class="guides" aria-label="Guides">
+    <details>
+      <summary>Your rules</summary>
+      <div class="dbody"><ul>
+        <li>No skipping meals, calorie targets, food guilt, or exercise to compensate for eating.</li>
+        <li>No training through pain or exhaustion.</li>
+        <li>No need to complete everything perfectly.</li>
+        <li>Strength, good posture, enjoyment and consistency matter more than a particular body shape.</li>
+      </ul></div>
+    </details>
+    <details>
+      <summary>Two-week workout guide</summary>
+      <div class="dbody">
+        <div class="sched">
+          <span>Oct 11</span><span>Full body</span><span>Oct 12</span><span>Recovery</span><span>Oct 13</span><span>Core</span><span>Oct 14</span><span>Mobility</span><span>Oct 15</span><span>Legs</span><span>Oct 16</span><span>Fun movement</span><span>Oct 17</span><span>Full body</span><span>Oct 18</span><span>Recovery</span><span>Oct 19</span><span>Back and posture</span><span>Oct 20</span><span>Recovery</span><span>Oct 21</span><span>Core</span><span>Oct 22</span><span>Legs</span><span>Oct 23</span><span>Fun movement</span><span>Oct 24</span><span>Favourite workout or rest</span>
+        </div>
+        <ul>
+          <li>Warm up for 5–10 minutes before a strength session.</li>
+          <li>Choose beginner videos with good demonstrations, controlled movements and breaks.</li>
+          <li>Modify exercises or stop when you need to. Sharp pain, dizziness or feeling unwell means stopping.</li>
+          <li>You don't have to do the entire video if it's too challenging.</li>
+          <li>Strengthen abs, back and legs for capability, balance and posture. No workout can guarantee a particular silhouette or burn fat from one chosen area.</li>
+          <li>If you're new to strength training, supervision and learning good technique are valuable.</li>
+        </ul>
+        <p>Browse <a href="https://www.youtube.com/results?search_query=Pamela+Reif+beginner+workouts" target="_blank" rel="noopener">Pamela Reif</a> and <a href="https://www.youtube.com/results?search_query=Eleni+Fit+beginner+workouts" target="_blank" rel="noopener">Eleni Fit</a> beginner workouts and pick sessions that match your comfort level.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Simple skincare routine</summary>
+      <div class="dbody">
+        <p><b>Morning:</b> gentle cleanse or rinse → moisturiser → broad-spectrum SPF 30+ sunscreen.</p>
+        <p><b>Evening:</b> gentle cleanser → moisturiser.</p>
+        <p>For these two weeks, don't buy lots of products or introduce several new active ingredients at once. A simple routine is a good start, especially when you're unsure of your skin type.</p>
+        <p>If breakouts or irritation persist, ask a parent or guardian about getting advice from a healthcare professional.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Your October 24 goal</summary>
+      <div class="dbody">
+        <p>You don't need to reach a particular weight, appearance or workout milestone. Aim to have discovered:</p>
+        <ul>
+          <li>A skincare routine that feels easy.</li>
+          <li>A few personal style ideas you genuinely love.</li>
+          <li>A beginner strength routine that feels manageable.</li>
+          <li>Ways to eat a varied, satisfying range of foods during school.</li>
+          <li>An evening routine that helps you get enough rest.</li>
+          <li>A little more space for creativity, fun and self-expression.</li>
+        </ul>
+        <p>The real glow-up is a life where looking after yourself feels natural, not like another assignment. Keep the habits that help you feel well and let go of the ones that feel like pressure.</p>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    <span>Teenagers generally need 8–10 hours of sleep. Protect it.</span>
+    <span class="saved" id="saved">Your progress saves in this browser.</span>
+    <div class="backup">
+      <button class="btn" id="export">Download backup</button>
+      <button class="btn" id="import">Restore from backup</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </footer>
+</div>
+
+<script>
+const PR_FULL = "https://www.youtube.com/results?search_query=Pamela+Reif+beginner+full+body+workout+no+equipment";
+const DAYS = [
+  { d:"2026-10-11", t:"A fresh beginning",
+    eat:"Add a vitamin-C-rich fruit to your day, such as kiwi, guava, papaya, strawberries or an orange.",
+    feel:"I'm allowed to care for myself without criticising myself.",
+    move:"Beginner full-body strength, around 10 minutes, if you're feeling well.", vid:["Pamela Reif · beginner full body", PR_FULL],
+    exp:"Notice how your skin feels. Is your forehead oily? Do your cheeks feel dry or comfortable? Observe rather than judge.",
+    extra:"Do a 15-minute Sunday reset. Clear one surface, organise your schoolbag and prepare for Monday." },
+  { d:"2026-10-12", t:"The school-day glow",
+    eat:"Look for protein at the canteen: chicken, fish, eggs, tofu, meat, beans or yong tau foo. Keep your usual rice or noodles as well.",
+    feel:"My body deserves fuel for everything I ask of it.",
+    move:"Recovery day. Take a relaxed walk or do some gentle stretching.",
+    exp:"Choose one school-approved signature detail: a hairstyle, neat shoes, a favourite accessory, or stationery in colours you love." },
+  { d:"2026-10-13", t:"Skin-support day",
+    eat:"Add a vegetable to your day if one is available. Try leafy greens, carrots, broccoli, tomatoes or pumpkin.",
+    feel:"Consistency matters more than perfection.",
+    move:"Beginner core strength, around 5–10 minutes.", vid:["Pamela Reif · beginner abs & core","https://www.youtube.com/results?search_query=Pamela+Reif+beginner+abs+core+workout"],
+    exp:"Practise your simple skincare routine. Avoid harsh scrubs and introducing several new products at once." },
+  { d:"2026-10-14", t:"Energy, not exhaustion",
+    eat:"Include a carbohydrate you enjoy, such as rice, noodles, bread, oats, potatoes or sweet potatoes. These give you energy for school and movement.",
+    feel:"I can be ambitious without being harsh to myself.",
+    move:"Gentle mobility or stretching. Let your muscles recover.",
+    exp:"Practise a comfortable three-minute hairstyle for school. Find one easy enough to repeat when you're busy." },
+  { d:"2026-10-15", t:"Little details",
+    eat:"Include a calcium-rich food you enjoy: milk, yoghurt, cheese, calcium-fortified soy milk or calcium-set tofu.",
+    feel:"Small acts of care count even when nobody notices them.",
+    move:"Beginner leg strength, around 10–15 minutes. Keep movements controlled and take breaks as needed.", vid:["Eleni Fit · beginner legs","https://www.youtube.com/results?search_query=Eleni+Fit+beginner+leg+workout+no+equipment"],
+    exp:"Give yourself a five-minute hygiene reset. Clean your phone screen following the manufacturer's instructions and change your pillowcase if it's due." },
+  { d:"2026-10-16", t:"Finish the school week gently",
+    eat:"Include an iron-containing food, such as meat, fish, eggs, tofu, beans or lentils. Iron is particularly important during adolescence.",
+    feel:"Rest is part of a good life, not the opposite of ambition.",
+    move:"Fun movement. Dance, play badminton or take a relaxed walk. No formal workout required.",
+    exp:"Create a five-song playlist for your after-school transition: songs that make you feel happy, confident, nostalgic or ready for an adventure." },
+  { d:"2026-10-17", t:"Discover your style",
+    eat:"Include a source of unsaturated fats, such as nuts, seeds, avocado, peanut butter, sesame or oily fish.",
+    feel:"My taste is something I get to discover.",
+    move:"A 15–20-minute beginner full-body session, or a shorter one if you're tired. A rest day is also fine.", vid:["Pamela Reif · beginner full body", PR_FULL],
+    exp:"Create three outfits from clothes you already own. Focus on colours, textures, layers and mood. No shopping required.",
+    list:["One comfortable everyday look","One polished look","One creative look"] },
+  { d:"2026-10-18", t:"Reset your rhythm",
+    eat:"Try a satisfying first meal that combines food groups, like oats with milk and banana, or toast with eggs and fruit. Adapt it to your appetite and routine.",
+    feel:"I can make my life easier instead of expecting myself to do everything perfectly.",
+    move:"Recovery day. Gentle stretching, a relaxed walk, or another comfortable activity.",
+    exp:"Spend 15 minutes preparing for the school week. Organise your schoolbag, choose accessories and make your desk more pleasant." },
+  { d:"2026-10-19", t:"Canteen confidence",
+    eat:"Look for plant-based protein, such as tofu, tempeh, chickpeas, lentils, beans or dhal. Yong tau foo may be one option.",
+    feel:"Taking care of myself should work with my life, not against it.",
+    move:"Beginner back strength and posture, around 10 minutes.", vid:["Eleni Fit · beginner back & posture","https://www.youtube.com/results?search_query=Eleni+Fit+beginner+back+posture+workout"],
+    exp:"Identify two or three canteen meals you enjoy that keep you going through the afternoon. Make them your convenient favourites." },
+  { d:"2026-10-20", t:"The hydration habit",
+    eat:"Keep water within reach all day. Enjoy water-rich foods like fruit, cucumber or soup too. Drink regularly according to thirst and activity.",
+    feel:"I can respond to what my body needs instead of ignoring it until later.",
+    move:"Easy movement or rest. There's no need to train hard every day.",
+    exp:"Connect water breaks to moments that already happen: packing your bag, school breaks, lunch and arriving home." },
+  { d:"2026-10-21", t:"Colour your day",
+    eat:"Choose a fruit you don't usually reach for: dragon fruit, papaya, guava, grapes, pear, or whatever looks appealing.",
+    feel:"There's always something new to discover in an ordinary week.",
+    move:"Beginner core strength, around 5–10 minutes, with controlled movements.", vid:["Pamela Reif · beginner core","https://www.youtube.com/results?search_query=Pamela+Reif+beginner+core+workout"],
+    exp:"Try a style detail you've never experimented with: a new hair part, a colour combination, a different accessory, or a new way to organise your bag." },
+  { d:"2026-10-22", t:"The evening wind-down",
+    eat:"If you're hungry after school, have a satisfying snack: yoghurt and fruit, crackers and cheese, bread with peanut butter, or another combination you enjoy.",
+    feel:"I deserve an evening that isn't just one long race to bedtime.",
+    move:"Beginner leg strength, around 10–15 minutes, if your legs feel recovered.", vid:["Eleni Fit · beginner leg strength","https://www.youtube.com/results?search_query=Eleni+Fit+beginner+leg+strength+workout"],
+    exp:"Start winding down 20–30 minutes before bed. Try a warm shower, skincare, relaxing music, or a few pages of a book." },
+  { d:"2026-10-23", t:"The creative-girl day",
+    eat:"Enjoy a food you genuinely love: noodles, dumplings, a favourite home-cooked dish, or dessert. You don't need to earn a treat or make up for enjoying one.",
+    feel:"My life is about more than productivity and self-improvement.",
+    move:"Enjoyable movement such as dancing, badminton or walking. Choose what feels good.",
+    exp:"Spend 20 minutes creating something just for fun: a fashion moodboard, a drawing, a song idea, a photo diary or a short video concept. You don't need to publish it." },
+  { d:"2026-10-24", t:"Your own kind of glow",
+    eat:"Aim for variety across your day: carbohydrates, protein foods, fruit or vegetables, and fats. Singapore's “Quarter, Quarter, Half” guide can help, as a flexible guide rather than a rule for every meal.",
+    feel:"I don't need to become a different person. I can build on who I already am.",
+    move:"Repeat your favourite beginner session from the past two weeks, or rest if your body needs it. Don't add workouts just to finish a streak.",
+    exp:"Spend 15 minutes reviewing your fortnight using the questions below.", review:true,
+    extra:"Tomorrow is the Dragonfruit Music Festival. Lay out your outfit, pack your bag, snacks and water bottle, and get to bed on time." }
+];
+const FOUND = [
+  ["Morning", [["m1","Gentle cleanse or rinse, moisturiser, SPF 30+"],["m2","Get ready in a way that feels comfortable and confident"],["m3","Breakfast if you're hungry and have time"]]],
+  ["During school", [["s1","A satisfying canteen lunch: carbs, protein, veg"],["s2","Water regularly, especially in the heat"],["s3","Move and stretch between lessons"]]],
+  ["During the day", [["s1","A proper lunch, even on a lazy day"],["s2","Keep water with you, especially when you're out"],["s3","Get some fresh air or daylight"]]],
+  ["Evening", [["e1","Gently cleanse and moisturise"],["e2","The day's workout, movement or recovery"],["e3","Protect time for 8–10 hours of sleep"]]]
+];
+const REVIEW = [
+  ["r1","Which skincare habit was easiest to maintain?"],
+  ["r2","Which outfit or hairstyle made you feel most like yourself?"],
+  ["r3","Which activity was genuinely fun?"],
+  ["r4","Which routines made school days easier?"]
+];
+const MOODS = ["tired","okay","calm","good","glowing"];
+const ENERGY = ["low","medium","high"];
+const SKIN = ["calm","dry","oily","a breakout","sensitive"];
+const WOFEEL = ["too easy","just right","too hard","rested instead"];
+
+/* Daily drawings: 120×120 line-and-fill objects in the page palette */
+const ring = (n, r, cx, cy, f) => Array.from({length:n}, (_, i) => { const a = i / n * Math.PI * 2; return f(cx + Math.cos(a) * r, cy + Math.sin(a) * r, a * 180 / Math.PI); }).join("");
+const BOWL = `<path class="f-paper" d="M14 60h92c0 26-20 44-46 44S14 86 14 60z"/>`;
+const ART = {
+  tennis: `<path d="M20 100l26-30" stroke="var(--cocoa)" stroke-width="7" stroke-linecap="round"/><ellipse cx="62" cy="48" rx="22" ry="28" fill="none" stroke="var(--cocoa)" stroke-width="5" transform="rotate(40 62 48)"/><g transform="rotate(40 62 48)" stroke="var(--muted)" stroke-width="1" fill="none">${[-12,-6,0,6,12].map(o => `<path d="M${62+o} 24v48M42 ${48+o}h40"/>`).join("")}</g><circle cx="92" cy="90" r="17" fill="#d7e04f"/><path d="M77 82c8 2 12 10 10 22M107 98c-8-2-12-10-10-22" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+  mat: `<rect class="f-cocoa" x="34" y="10" width="54" height="52" rx="4"/><path class="f-cocoa2" d="M30 52c0-6 6-10 14-10h40c4 0 6 3 6 6v62c0 2-2 4-4 4H34c-2 0-4-2-4-4z"/>`,
+  glass: `<path class="f-water" d="M37 46h46l-4 60H41z"/><path class="s-ink" d="M33 24h54l-6 84c0 3-2 4-4 4H43c-2 0-4-1-4-4z"/><ellipse class="s-ink" cx="60" cy="24" rx="27" ry="3"/>`,
+  oats: `<circle class="f-bowl" cx="60" cy="60" r="44"/><circle class="f-oat" cx="60" cy="60" r="35"/><g class="f-banana"><circle cx="54" cy="38" r="7"/><circle cx="56" cy="51" r="7"/><circle cx="57" cy="64" r="7"/><circle cx="58" cy="77" r="7"/></g><g class="f-nut"><ellipse cx="74" cy="44" rx="4" ry="6" transform="rotate(30 74 44)"/><ellipse cx="80" cy="56" rx="4" ry="6" transform="rotate(-20 80 56)"/><ellipse cx="73" cy="66" rx="4" ry="6" transform="rotate(50 73 66)"/><ellipse cx="78" cy="76" rx="3" ry="5"/></g><g class="f-seed"><ellipse cx="40" cy="48" rx="2.5" ry="4.5"/><ellipse cx="36" cy="60" rx="2.5" ry="4.5" transform="rotate(40 36 60)"/><ellipse cx="42" cy="70" rx="2.5" ry="4.5" transform="rotate(-30 42 70)"/><ellipse cx="44" cy="58" rx="2.5" ry="4.5" transform="rotate(70 44 58)"/></g>`,
+  kiwi: `<circle cx="60" cy="60" r="42" fill="#8a6a45"/><circle cx="60" cy="60" r="37" fill="#9cba4c"/><circle cx="60" cy="60" r="26" fill="#b9cf6e"/><ellipse cx="60" cy="60" rx="11" ry="9" fill="#f1ecd2"/>` + ring(14, 17, 60, 60, (x, y, d) => `<ellipse cx="${x}" cy="${y}" rx="1.4" ry="3" fill="#2b2420" transform="rotate(${d + 90} ${x} ${y})"/>`),
+  mirror: `<ellipse class="f-cocoa" cx="60" cy="46" rx="30" ry="36"/><ellipse class="f-water" cx="60" cy="46" rx="23" ry="29"/><path d="M48 32c4-6 10-9 16-9" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/><rect class="f-cocoa" x="55" y="80" width="10" height="32" rx="5"/>`,
+  ytf: BOWL + `<rect x="30" y="40" width="20" height="20" rx="3" fill="#e8cf95"/><circle cx="62" cy="48" r="11" fill="#f4efe6" stroke="#b9ad9f" stroke-width="1.5"/><path d="M74 58c2-16 14-24 24-22-2 12-10 20-24 22z" fill="#7f9c55"/><circle cx="44" cy="54" r="7" fill="#f4efe6" stroke="#b9ad9f" stroke-width="1.5"/><path class="s-line" d="M20 70h80"/>`,
+  sneaker: `<path class="f-paper" d="M12 84c0-16 6-30 14-36 6 6 16 10 24 10 14 8 30 10 44 12 10 2 16 8 16 14v4H12z"/><rect class="f-cocoa" x="10" y="86" width="102" height="10" rx="4"/><path class="s-line" d="M34 58l8 6M40 54l8 6M46 50l8 6"/>`,
+  clip: `<path class="f-cocoa" d="M22 54c0-14 16-22 38-22s38 8 38 22v6H22z"/>` + [30,42,54,66,78,90].map(x => `<path d="M${x} 60c0 14 2 26 6 34" stroke="var(--cocoa)" stroke-width="6" stroke-linecap="round" fill="none" opacity=".8"/>`).join(""),
+  broccoli: `<path d="M52 66h16l4 44H48z" fill="#a8bf6a"/>` + [[40,52,16],[60,40,18],[80,52,16],[50,62,14],[70,62,14],[60,56,14]].map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#6f8f3e"/>`).join("") + `<g fill="#58772f">${[[44,46],[58,34],[76,46],[62,52]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="3"/>`).join("")}</g>`,
+  cleanser: `<rect class="f-paper" x="38" y="38" width="44" height="72" rx="10"/><rect class="f-cocoa" x="52" y="24" width="16" height="14" rx="3"/><path class="f-cocoa" d="M56 24V12h24v6H62v6z"/><rect class="f-water" x="44" y="58" width="32" height="30" rx="4"/>`,
+  rice: BOWL + `<path d="M22 60c4-24 22-34 38-34s34 10 38 34z" fill="#f4efe6" stroke="#cfc6b9" stroke-width="1.5"/>` + `<path d="M74 22l34-14M80 26l32-10" stroke="var(--cocoa)" stroke-width="3.5" stroke-linecap="round"/>`,
+  band: `<ellipse cx="60" cy="62" rx="40" ry="26" fill="none" stroke="#c98f7a" stroke-width="12" transform="rotate(-18 60 62)"/><ellipse cx="60" cy="62" rx="40" ry="26" fill="none" stroke="#e2b3a2" stroke-width="3" transform="rotate(-18 60 62)" opacity=".7"/>`,
+  tie: `<circle cx="50" cy="58" r="26" fill="none" stroke="var(--cocoa)" stroke-width="9"/><circle cx="74" cy="66" r="22" fill="none" stroke="#c98f7a" stroke-width="8"/>`,
+  milk: `<path d="M38 40h44l-4 66H42z" fill="#f6f3ee"/><path class="s-ink" d="M33 22h54l-6 86c0 3-2 4-4 4H43c-2 0-4-1-4-4z"/><ellipse class="s-ink" cx="60" cy="22" rx="27" ry="3"/><ellipse cx="60" cy="40" rx="22" ry="2.5" fill="#e9e3d8"/>`,
+  dumbbell: `<rect class="f-cocoa" x="14" y="40" width="16" height="40" rx="5"/><rect class="f-cocoa2" x="30" y="46" width="10" height="28" rx="3"/><rect x="40" y="56" width="40" height="8" rx="3" fill="#8f8781"/><rect class="f-cocoa2" x="80" y="46" width="10" height="28" rx="3"/><rect class="f-cocoa" x="90" y="40" width="16" height="40" rx="5"/>`,
+  pillow: `<path class="f-paper" d="M18 38c14 4 28-4 42-4s28 8 42 4c4 14 4 30 0 44-14-4-28 4-42 4s-28-8-42-4c-4-14-4-30 0-44z"/><path class="s-line" d="M28 46c10 2 22-4 32-4s22 6 32 4M28 74c10-2 22 4 32 4s22-6 32-4" stroke-dasharray="3 5" stroke-width="1.6"/>`,
+  egg: `<path d="M30 40c12-18 44-16 56-2 14 16 10 40-6 50-18 12-44 10-54-6-8-14-6-28 4-42z" fill="#f6f3ee" stroke="#cfc6b9" stroke-width="1.5"/><circle cx="58" cy="62" r="16" fill="#f2b544"/><circle cx="53" cy="57" r="4" fill="#f8d27e"/>`,
+  racket: `<ellipse cx="50" cy="44" rx="26" ry="32" fill="none" stroke="var(--cocoa)" stroke-width="5" transform="rotate(-30 50 44)"/><g transform="rotate(-30 50 44)" class="s-line" style="stroke-width:1">${[-16,-8,0,8,16].map(o => `<path d="M${50+o} 16v56M28 ${44+o}h44"/>`).join("")}</g><path d="M66 72l22 34" stroke="var(--cocoa)" stroke-width="7" stroke-linecap="round"/><circle cx="96" cy="30" r="5" class="f-cocoa"/><path d="M96 26l-8-14M96 26l0-16M96 26l8-14" class="s-line" style="stroke-width:1.6"/>`,
+  phones: `<path class="s-line" d="M26 74V60c0-20 16-36 34-36s34 16 34 36v14" style="stroke-width:6;stroke:var(--cocoa)"/><rect class="f-cocoa" x="18" y="66" width="18" height="32" rx="8"/><rect class="f-cocoa" x="84" y="66" width="18" height="32" rx="8"/>`,
+  avocado: `<path d="M60 10c14 0 22 18 28 36 8 22 10 34 6 46-6 16-20 22-34 22s-28-6-34-22c-4-12-2-24 6-46 6-18 14-36 28-36z" fill="#4f6b34"/><path d="M60 18c10 0 17 16 22 32 6 18 8 28 4 38-4 12-14 18-26 18s-22-6-26-18c-4-10-2-20 4-38 5-16 12-32 22-32z" fill="#cfe0a0"/><circle cx="60" cy="74" r="15" fill="#8a5a3c"/><circle cx="55" cy="69" r="4" fill="#a8775a"/>`,
+  hanger: `<path class="s-line" d="M60 40v-8c0-6 8-6 8-12s-4-8-8-8-8 3-8 7" style="stroke-width:3"/><path class="s-line" d="M60 40L14 74c-4 3-2 8 2 8h88c4 0 6-5 2-8z" style="stroke-width:3.5;stroke:var(--cocoa)"/>`,
+  lamp: `<rect class="f-paper" x="10" y="100" width="100" height="6" rx="2"/><path class="s-line" d="M30 100V70l26-26" style="stroke-width:4;stroke:var(--cocoa)"/><path class="f-cocoa" d="M50 32l28 14-16 18-24-14z"/><circle cx="30" cy="70" r="4" class="f-cocoa"/><path d="M66 62l14 30" stroke="#f2d27e" stroke-width="10" opacity=".35" stroke-linecap="round"/><rect x="70" y="86" width="30" height="14" rx="2" class="f-water"/>`,
+  tofu: [[26,58],[60,58],[43,34]].map(([x,y]) => `<path d="M${x} ${y+8}l16-8 18 8v24l-18 8-16-8z" fill="#efe3c2" stroke="#cdbf9a" stroke-width="1.5"/><path d="M${x} ${y+8}l18 8 16-8M${x+18} ${y+16}v24" stroke="#cdbf9a" stroke-width="1.5" fill="none"/>`).join(""),
+  tray: `<rect class="f-paper" x="10" y="26" width="100" height="70" rx="10"/><path class="s-line" d="M60 34v54M60 60h42" style="stroke-width:1.4"/><ellipse cx="36" cy="60" rx="18" ry="24" fill="#f4efe6" stroke="#cfc6b9"/><circle cx="80" cy="46" r="8" fill="#c99a6b"/><circle cx="92" cy="48" r="6" fill="#c99a6b"/><path d="M72 76c6-8 16-8 26-2-8 8-18 8-26 2z" fill="#8fae5a"/>`,
+  melon: `<path d="M12 46h96c0 30-22 52-48 52S12 76 12 46z" fill="#6f8f3e"/><path d="M18 46h84c0 26-18 46-42 46S18 72 18 46z" fill="#f1ecd2"/><path d="M22 46h76c0 22-16 40-38 40S22 68 22 46z" fill="#e0706a"/><g fill="#2b2420">${[[40,56],[54,66],[66,58],[78,64],[60,76],[46,70]].map(([x,y]) => `<ellipse cx="${x}" cy="${y}" rx="1.8" ry="3"/>`).join("")}</g>`,
+  moon: `<path d="M74 18A42 42 0 1 0 100 82 34 34 0 1 1 74 18z" fill="#e8cf95"/><g class="f-cocoa2"><circle cx="98" cy="30" r="2.5"/><circle cx="86" cy="50" r="1.8"/><circle cx="104" cy="56" r="1.5"/></g>`,
+  bottle: `<rect class="f-cocoa" x="48" y="10" width="24" height="14" rx="4"/><rect class="f-water" x="40" y="44" width="40" height="62" rx="8"/><rect class="s-ink" x="38" y="24" width="44" height="86" rx="12"/><path d="M48 52v40" stroke="#ffffff" stroke-width="3" opacity=".6" stroke-linecap="round"/>`,
+  dragon: `<ellipse cx="60" cy="60" rx="40" ry="46" fill="#d8578a"/><path d="M28 30l-12-12M92 30l12-12M20 70H6M100 70h14" stroke="#7fa85a" stroke-width="4" stroke-linecap="round"/><ellipse cx="60" cy="60" rx="33" ry="39" fill="#f6f1ec"/><g fill="#2b2420">${[[44,40],[58,32],[72,40],[40,56],[52,50],[66,54],[80,52],[46,68],[60,64],[74,68],[50,82],[64,80],[78,82],[56,92],[70,94],[38,46],[84,62],[58,44]].map(([x,y]) => `<ellipse cx="${x}" cy="${y-2}" rx="1.3" ry="2" />`).join("")}</g>`,
+  swatch: ["#e8cf95","#c98f7a","#8fae5a","#7fa3b5","var(--cocoa)"].map((c, i) => `<rect x="52" y="14" width="22" height="80" rx="5" fill="${c}" transform="rotate(${-40 + i * 16} 63 100)"/>`).join("") + `<circle cx="63" cy="96" r="4" class="f-paper"/>`,
+  yoghurt: `<path class="f-paper" d="M24 44h72l-8 60c0 4-3 6-6 6H38c-3 0-6-2-6-6z"/><ellipse cx="60" cy="44" rx="36" ry="8" fill="#f6f3ee" stroke="var(--muted)" stroke-width="1.6"/><circle cx="48" cy="40" r="6" fill="#c0475a"/><circle cx="62" cy="36" r="5" fill="#4a4f8a"/><circle cx="72" cy="42" r="6" fill="#c0475a"/><path d="M30 64h60" class="s-line" style="stroke-width:1.4"/>`,
+  book: `<path class="f-paper" d="M60 34c-14-8-30-10-46-8v66c16-2 32 0 46 8z"/><path class="f-paper" d="M60 34c14-8 30-10 46-8v66c-16-2-32 0-46 8z"/><path class="s-line" d="M24 42c10-1 20 1 28 4M24 54c10-1 20 1 28 4M24 66c10-1 20 1 28 4M68 46c8-3 18-5 28-4M68 58c8-3 18-5 28-4M68 70c8-3 18-5 28-4" style="stroke-width:1.2"/>`,
+  dumplings: [[34,74],[86,74],[60,48]].map(([x,y]) => `<path d="M${x-26} ${y+6}c0-18 12-28 26-28s26 10 26 28c-8 4-18 6-26 6s-18-2-26-6z" fill="#f1e6cf" stroke="#cdbf9a" stroke-width="1.5"/><path d="M${x-10} ${y-14}l2 10M${x} ${y-20}v12M${x+10} ${y-14}l-2 10" stroke="#cdbf9a" stroke-width="1.5" fill="none" stroke-linecap="round"/>`).join(""),
+  notes: `<g class="f-cocoa"><ellipse cx="34" cy="88" rx="12" ry="9" transform="rotate(-20 34 88)"/><ellipse cx="84" cy="78" rx="12" ry="9" transform="rotate(-20 84 78)"/></g><path d="M45 86V26l50-10v60" stroke="var(--cocoa)" stroke-width="5" fill="none" stroke-linejoin="round"/><path d="M45 38l50-10" stroke="var(--cocoa)" stroke-width="8"/>`,
+  brush: `<path d="M30 102c-6-14 6-30 22-24 10 4 6 20-6 22-6 1-10 0-16 2z" fill="#d27b6a"/><path d="M50 74l40-50" stroke="var(--cocoa)" stroke-width="8" stroke-linecap="round"/><path d="M48 76l8-10" stroke="#a9a19b" stroke-width="10"/><circle cx="96" cy="94" r="8" fill="#e8cf95"/><circle cx="80" cy="104" r="5" fill="#7fa3b5"/>`,
+  plate: `<circle class="f-paper" cx="60" cy="60" r="48"/><path d="M60 60V22A38 38 0 0 1 98 60z" fill="#f4efe6" stroke="#cfc6b9"/><path d="M60 60h38A38 38 0 0 1 60 98z" fill="#c99a6b"/><path d="M60 60v38A38 38 0 0 1 60 22z" fill="#8fae5a"/>`,
+  star: `<path d="M60 14l13 30 32 3-24 21 7 32-28-17-28 17 7-32-24-21 32-3z" fill="#e8cf95" stroke="var(--cocoa)" stroke-width="2" stroke-linejoin="round"/>`,
+  notebook: `<rect class="f-cocoa" x="26" y="14" width="64" height="92" rx="6"/><rect x="36" y="30" width="44" height="18" rx="3" fill="#f6f3ee" opacity=".85"/>` + [24,38,52,66,80,94].map(y => `<circle cx="26" cy="${y}" r="4" fill="none" stroke="var(--muted)" stroke-width="2"/>`).join("") + `<path d="M98 30l8 6-20 64-8 4 0-9z" fill="#e8cf95" stroke="var(--muted)" stroke-width="1.4"/>`
+};
+/* Special days: add an entry here for any date (YYYY-MM-DD) */
+const SPECIALS = {
+  "2026-10-11": {
+    kicker: "Special day · tennis", title: "Rolex Shanghai Masters", art: "tennis",
+    text: "Have the best time! All the walking around the venue counts as today's movement, so the full-body workout can wait if you're out all day.",
+    items: [["sp1","SPF before you go, plus a cap or sunglasses for the outside courts"],["sp2","Water bottle and a snack in your bag"],["sp3","Comfortable shoes for all the walking"],["sp4","Eat a proper meal, even if the schedule is busy"]],
+    note: "Favourite moment or player of the day"
+  }
+};
+const DEFAULT_ART = [["mat","go for a walk / move your body"],["glass","drink water through the day"],["oats","eat nourishing, satisfying meals"]];
+const DAY_ART = [
+  [["kiwi","a kiwi for vitamin C"],["mat","10-min full body"],["mirror","notice your skin"]],
+  [["ytf","protein at the canteen"],["sneaker","a relaxed walk"],["clip","one signature detail"]],
+  [["broccoli","add a vegetable"],["mat","5–10-min core"],["cleanser","keep skincare simple"]],
+  [["rice","a carb you enjoy"],["band","gentle stretching"],["tie","a 3-minute hairstyle"]],
+  [["milk","something with calcium"],["dumbbell","10–15-min legs"],["pillow","fresh pillowcase"]],
+  [["egg","an iron-rich food"],["racket","fun movement"],["phones","a five-song playlist"]],
+  [["avocado","some healthy fats"],["mat","full body or rest"],["hanger","three outfits"]],
+  [["oats","a satisfying first meal"],["sneaker","recovery walk"],["lamp","set up your week"]],
+  [["tofu","plant-based protein"],["band","back and posture"],["tray","find your canteen favourites"]],
+  [["melon","water-rich foods"],["moon","easy movement or rest"],["bottle","link water to moments"]],
+  [["dragon","a fruit you don't usually pick"],["mat","5–10-min core"],["swatch","a new style detail"]],
+  [["yoghurt","a satisfying snack"],["dumbbell","legs, if recovered"],["book","wind down before bed"]],
+  [["dumplings","a food you love"],["notes","dance it out"],["brush","make something for fun"]],
+  [["plate","variety across the day"],["star","your favourite, or rest"],["notebook","review your fortnight"]]
+];
+function objects(list) {
+  return `<div class="objects">${list.map(([a, label]) => `<div class="obj"><svg viewBox="0 0 120 120" aria-hidden="true">${ART[a]}</svg><b>${esc(label)}</b></div>`).join("")}</div>`;
+}
+const FKEYS = [...new Set(FOUND.flatMap(g => g[1].map(i => i[0])))];
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+const pad = n => String(n).padStart(2,"0");
+const iso = dt => dt.getFullYear()+"-"+pad(dt.getMonth()+1)+"-"+pad(dt.getDate());
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const dt = parse(s); dt.setDate(dt.getDate()+n); return iso(dt); };
+const TODAY = iso(new Date());
+const LAST = DAYS[13].d;
+const WIN = "2026-10-25";
+
+let state = { days:{}, review:{}, keep:["","",""], faves:[] };
+const isSchool = k => ![0,6].includes(parse(k).getDay());
+let sel = TODAY < DAYS[0].d ? DAYS[0].d : TODAY;
+
+function dayState(k) { return state.days[k] || (state.days[k] = { c:{}, mood:"", note:"" }); }
+const WIN_TASKS = [
+  ["fuel","Fuel up","Eat a proper breakfast and pack snacks for between performances. Performing takes real energy."],
+  ["water","Water","Bring your water bottle. Outdoor festivals in Singapore get hot."],
+  ["spf","Skin","SPF 30+ in the morning, and reapply if you're outside for a long time."],
+  ["outfit","Your look","Wear the outfit that makes you feel most like yourself. You found it in Week 1."],
+  ["warm","Warm up","Warm up the way you usually do before performing. Then stop practising and trust the work."],
+  ["p1","Performance 1","Go out there and enjoy it."],
+  ["p2","Performance 2","Rest, refuel and drink some water before this one."],
+  ["enjoy","Enjoy the festival","Watch at least one act just for fun, with the people you love."]
+];
+function keysFor(k) {
+  if (k === WIN) return ["feel", ...WIN_TASKS.map(t => t[0])];
+  const di = DAYS.find(x => x.d === k);
+  const sp = SPECIALS[k] ? SPECIALS[k].items.map(i => i[0]) : [];
+  if (di) return [...FKEYS, "eat","feel","move","exp", ...(di.extra ? ["extra"] : []), ...sp];
+  return [...FKEYS, ...state.keep.map((h,i) => h.trim() ? "k"+i : null).filter(Boolean), ...sp];
+}
+function progress(k) {
+  const ks = keysFor(k), c = (state.days[k] || {}).c || {};
+  return { done: ks.filter(x => c[x]).length, total: ks.length };
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch])); }
+
+function renderStrip() {
+  const strip = document.getElementById("strip");
+  let h = '<span class="weekmark">Week 1 · Nourish &amp; revive</span><span class="weekmark w2">Week 2 · Express &amp; glow</span>';
+  DAYS.forEach(x => {
+    const dt = parse(x.d), p = progress(x.d);
+    h += `<button class="cell${x.d===TODAY?" today":""}" data-go="${x.d}" aria-current="${x.d===sel}" aria-label="${WD[dt.getDay()]} ${dt.getDate()} October, ${p.done} of ${p.total} done">
+      <span class="wd">${WD[dt.getDay()].slice(0,2)}</span><span class="n">${dt.getDate()}</span><span class="bar"><i style="width:${p.total?p.done/p.total*100:0}%"></i></span></button>`;
+  });
+  const wp = progress(WIN);
+  h += `<button class="cell win${WIN===TODAY?" today":""}" data-go="${WIN}" aria-current="${sel===WIN}" aria-label="Sunday 25 October, Dragonfruit Music Festival"><span class="wd">fest</span><span class="n">25</span><span class="bar"><i style="width:${wp.done/wp.total*100}%;background:var(--pink)"></i></span></button>`;
+  const after = sel > WIN;
+  h += `<button class="cell after" data-go="after" aria-current="${after}" aria-label="After the fortnight"><span class="wd">26+</span><span class="n">after</span><span class="bar"><i style="width:0"></i></span></button>`;
+  strip.innerHTML = h;
+  const shown = DAYS.filter(x => progress(x.d).done > 0).length;
+  const left = Math.round((parse(WIN) - parse(TODAY)) / 864e5);
+  document.getElementById("countdown").textContent = left > 1 ? `${left} days until the Dragonfruit Music Festival` : left === 1 ? "The Dragonfruit Music Festival is tomorrow!" : left === 0 ? "It's festival day! Go glow." : "";
+  document.getElementById("overall").textContent = shown ? `You showed up on ${shown} of 14 days` : "Tap a day to open it";
+}
+
+function checkRow(k, id, text) {
+  const on = !!dayState(k).c[id];
+  return `<label class="check"><input type="checkbox" data-c="${id}" ${on?"checked":""}><span>${esc(text)}</span></label>`;
+}
+function taskRow(k, id, label, inner) {
+  const on = !!dayState(k).c[id];
+  return `<div class="task"><input type="checkbox" id="t-${id}" data-c="${id}" ${on?"checked":""} aria-label="${esc(label)} done"><div class="body"><label class="label" for="t-${id}">${label}</label>${inner}</div></div>`;
+}
+function foundations(k) {
+  return `<div class="group"><h3 style="margin-bottom:14px">Daily foundations</h3><div class="cols">${
+    FOUND.filter(g => g[0] !== ([0,6].includes(parse(k).getDay()) ? "During school" : "During the day")).map(g => `<div class="group"><h3>${g[0]}</h3>${g[1].map(i => checkRow(k, i[0], i[1])).join("")}</div>`).join("")
+  }</div></div>`;
+}
+function chips(k, field, values, multi, cls) {
+  const cur = dayState(k)[field];
+  return `<div class="moods${cls ? " " + cls : ""}" role="group">${values.map(v => `<button class="mood" data-chip="${field}" data-val="${v}"${multi ? " data-multi" : ""} aria-pressed="${multi ? (Array.isArray(cur) && cur.includes(v)) : cur === v}">${v}</button>`).join("")}</div>`;
+}
+function workout(k) {
+  return `<div class="wo"><label class="rl" for="wo-${k}">Workout notes</label><input class="in" id="wo-${k}" data-f="wo" placeholder="What did you do? e.g. Pamela Reif 10-min beginner">
+    ${chips(k, "wofeel", WOFEEL, false, "sm")}</div>`;
+}
+function reflection(k) {
+  return `<div class="reflect"><h3 class="eyebrow" style="margin:0">How did today feel?</h3>
+    <div class="row"><span class="rl">Mood</span>${chips(k, "mood", MOODS)}</div>
+    <div class="row"><span class="rl">Energy</span>${chips(k, "energy", ENERGY)}</div>
+    <div class="row"><span class="rl">Skin</span>${chips(k, "skin", SKIN, true)}</div>
+    <div class="field"><label for="outfit-${k}">Outfit of the day</label><input class="in" id="outfit-${k}" data-f="outfit" placeholder="What you wore and how it made you feel"></div>
+    <div class="field"><label for="note-${k}">Notes</label><textarea id="note-${k}" data-note placeholder="A line or two: what felt good, what you noticed, what you'd change."></textarea></div></div>`;
+}
+function favourites() {
+  return `<div class="reflect"><h3 class="eyebrow" style="margin:0">Canteen favourites</h3>
+    <span class="count">Meals that kept you full and happy through the afternoon.</span>
+    ${state.faves.length ? `<ul class="faves">${state.faves.map((f, i) => `<li><span>${esc(f)}</span><button class="x" data-unfave="${i}" aria-label="Remove ${esc(f)}">×</button></li>`).join("")}</ul>` : ""}
+    <form class="addrow" id="faveForm"><input class="in" id="faveIn" placeholder="e.g. yong tau foo with noodles" aria-label="Add a canteen favourite"><button class="btn" type="submit">Add</button></form></div>`;
+}
+function reviewBlock() {
+  return `<div class="reflect"><h3 class="eyebrow" style="margin:0">Fortnight review</h3>
+    ${REVIEW.map(q => `<div class="field"><label for="rv-${q[0]}">${q[1]}</label><textarea id="rv-${q[0]}" data-review="${q[0]}"></textarea></div>`).join("")}
+    <div class="field"><label>What three habits would you like to keep?</label>
+    <div class="keep">${[0,1,2].map(i => `<input id="keep-${i}" data-keep="${i}" placeholder="Habit ${i+1}" aria-label="Habit ${i+1} to keep">`).join("")}</div></div></div>`;
+}
+
+const HERO = `<svg class="hero" viewBox="0 0 240 150" aria-hidden="true">
+  <g class="confetti">
+    <rect x="22" y="22" width="7" height="7" rx="1.5" fill="#e8cf95" transform="rotate(20 25 25)"/><circle cx="210" cy="24" r="4" fill="var(--pink)"/>
+    <rect x="200" y="112" width="7" height="7" rx="1.5" fill="#7fa3b5"/><circle cx="30" cy="118" r="3.5" fill="#8fae5a"/>
+    <rect x="62" y="8" width="5" height="9" rx="1.5" fill="var(--pink)"/><rect x="176" y="62" width="5" height="9" rx="1.5" fill="#e8cf95"/>
+    <circle cx="56" cy="70" r="3" fill="#7fa3b5"/><circle cx="184" cy="10" r="3" fill="#8fae5a"/>
+    <path d="M226 74l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#e8cf95"/><path d="M14 66l2.5 5.5 5.5 2.5-5.5 2.5-2.5 5.5-2.5-5.5-5.5-2.5 5.5-2.5z" fill="var(--pink)"/>
+  </g>
+  <g transform="translate(57 12) scale(1.05)">${ART.dragon}</g>
+  <g class="note-l" transform="translate(4 40) scale(.5)">${ART.notes}</g>
+  <g class="note-r" transform="translate(178 30) scale(.48)">${ART.notes}</g>
+</svg>`;
+function special(k) {
+  const sp = SPECIALS[k]; if (!sp) return "";
+  return `<div class="special"><svg viewBox="0 0 120 120" aria-hidden="true">${ART[sp.art] || ""}</svg><div class="body">
+    <span class="eyebrow">${esc(sp.kicker)}</span><h3>${esc(sp.title)}</h3><p>${esc(sp.text)}</p>
+    <div class="group" style="margin-top:6px">${sp.items.map(i => checkRow(k, i[0], i[1])).join("")}</div>
+    ${sp.note ? `<div class="field" style="margin-top:6px"><label for="spnote-${k}">${esc(sp.note)}</label><input class="in" id="spnote-${k}" data-f="spnote"></div>` : ""}
+  </div></div>`;
+}
+function festival(k) {
+  const dsx = d => state.days[d] || {};
+  const shown = DAYS.filter(x => progress(x.d).done > 0).length;
+  const moved = DAYS.filter(x => (dsx(x.d).c || {}).move).length;
+  const outfits = DAYS.filter(x => (dsx(x.d).outfit || "").trim()).length;
+  const tasks = WIN_TASKS.map(([id, label, text]) => {
+    const extra = id === "p1" || id === "p2" ? `<input class="in" style="margin-top:8px" id="${id}-note" data-f="${id}note" placeholder="How did it go? One moment you want to remember" aria-label="${label} notes">` : "";
+    return taskRow(k, id, label, `<p>${esc(text)}</p>${extra}`).replace('class="label"', id[0] === "p" && id.length === 2 ? 'class="label pink"' : 'class="label"');
+  }).join("");
+  return `<div class="fest">${HERO}
+      <span class="eyebrow">Win day · Sunday, 25 October${k===TODAY?" · today":""}</span>
+      <h2>Dragonfruit Music Festival</h2>
+      <p>Two performances, and fourteen days of looking after yourself behind them. You don't need to be perfect today. You get to enjoy it.</p>
+      <span class="count"><span id="dc"></span></span></div>
+    <div class="wins">
+      <div><b>${shown}</b><span>days you showed up</span></div>
+      <div><b>${moved}</b><span>times you moved</span></div>
+      <div><b>${outfits}</b><span>outfits you noted</span></div>
+    </div>
+    <div class="tasks">${taskRow(k,"feel","Feel",`<p class="quote">“I've already done the work. Today I get to shine and have fun.”</p>`)}${tasks}</div>
+    ${reflection(k)}
+    <div class="nav"><button class="btn" data-go="${LAST}">← Day 14</button><button class="btn" data-go="after">After →</button></div>`;
+}
+function renderDay() {
+  const el = document.getElementById("day");
+  const k = sel, di = DAYS.findIndex(x => x.d === k), dt = parse(k);
+  const dateLine = `${WD[dt.getDay()]}day, ${dt.getDate()} ${MON[dt.getMonth()]}`.replace("Satday","Saturday").replace("Wedday","Wednesday").replace("Tueday","Tuesday").replace("Thuday","Thursday");
+  let h = "";
+  if (di >= 0) {
+    const x = DAYS[di];
+    const notice = TODAY < DAYS[0].d && di === 0 ? `<div class="notice">Your glow-up starts ${TODAY === addDays(DAYS[0].d,-1) ? "tomorrow" : "on Sunday, 11 October"}. Have a look at Day 1 now.</div>` : "";
+    h += `<div class="day-head"><span class="eyebrow">Day ${di+1} · Week ${di<7?"1 · Nourish & revive":"2 · Express & glow"}</span>
+      <h2><em>${esc(x.t)}</em></h2><span class="count">${dateLine}${k===TODAY?" · today":""} · <span id="dc"></span></span></div>${notice}${objects(DAY_ART[di])}${special(k)}`;
+    let tasks = taskRow(k,"eat","Eat",`<p>${esc(x.eat)}</p>`)
+      + taskRow(k,"feel","Feel",`<p class="quote">“${esc(x.feel)}”</p>`)
+      + taskRow(k,"move","Move",`<p>${esc(x.move)}</p>${x.vid?`<div class="vids"><a class="vid" href="${x.vid[1]}" target="_blank" rel="noopener">YouTube: ${esc(x.vid[0])} ↗</a><a class="vid" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(x.vid[0].replace(" · "," "))}" target="_blank" rel="noopener">Bilibili ↗</a></div>`:""}${workout(k)}`)
+      + taskRow(k,"exp","Experiment",`<p>${esc(x.exp)}</p>${x.list?`<ul>${x.list.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`:""}`)
+      + (x.extra ? taskRow(k,"extra","Extra",`<p>${esc(x.extra)}</p>`) : "");
+    h += `<div class="tasks">${tasks}</div>` + foundations(k);
+    if (isSchool(k)) h += favourites();
+    if (x.review) h += reviewBlock();
+    h += reflection(k);
+    h += `<div class="nav"><button class="btn" data-go="${di>0?DAYS[di-1].d:""}" ${di===0?"disabled":""}>← Day ${di}</button>
+      <button class="btn" data-go="${di<13?DAYS[di+1].d:WIN}">${di<13?`Day ${di+2} →`:"Festival day →"}</button></div>`;
+  } else if (k === WIN) {
+    h += festival(k);
+  } else {
+    const kept = state.keep.map((t,i)=>[t.trim(),i]).filter(p=>p[0]);
+    h += `<div class="day-head"><span class="eyebrow">After the fortnight · keep going</span>
+      <h2><em>${dateLine}</em></h2><span class="count">${k===TODAY?"Today · ":""}<span id="dc"></span></span></div>${objects(DEFAULT_ART)}${special(k)}
+      <div class="notice">Keep the habits that help you feel well and let go of the ones that feel like pressure. ${kept.length ? "" : "Add the three habits you want to keep below and they'll show up here every day."}</div>`;
+    if (kept.length) h += `<div class="tasks">${kept.map(([t,i]) => taskRow(k,"k"+i,"Habit to keep",`<p>${esc(t)}</p>`)).join("")}</div>`;
+    h += `<div class="group"><h3>Movement today</h3>${workout(k)}</div>`;
+    h += foundations(k) + (isSchool(k) ? favourites() : "") + reflection(k);
+    h += `<div class="field"><label>Three habits to keep</label><div class="keep">${[0,1,2].map(i => `<input id="keep-${i}" data-keep="${i}" placeholder="Habit ${i+1}" aria-label="Habit ${i+1} to keep">`).join("")}</div></div>`;
+    h += `<div class="nav"><button class="btn" data-go="${k <= addDays(WIN,1) ? WIN : addDays(k,-1)}">← ${k <= addDays(WIN,1) ? "Festival day" : "Previous day"}</button>
+      <button class="btn" data-go="${addDays(k,1)}" ${k >= TODAY && k > addDays(WIN,1) ? "disabled" : ""}>Next day →</button></div>`;
+  }
+  el.innerHTML = h;
+  const ds = dayState(k);
+  const note = el.querySelector("[data-note]"); if (note) note.value = ds.note || "";
+  el.querySelectorAll("[data-f]").forEach(t => t.value = ds[t.dataset.f] || "");
+  el.querySelectorAll("[data-review]").forEach(t => t.value = state.review[t.dataset.review] || "");
+  el.querySelectorAll("[data-keep]").forEach(t => t.value = state.keep[+t.dataset.keep] || "");
+  updateCount();
+}
+function updateCount() {
+  const p = progress(sel), dc = document.getElementById("dc");
+  if (dc) dc.textContent = `${p.done} of ${p.total} little things`;
+}
+function render() { renderStrip(); renderDay(); }
+
+function go(target) {
+  if (!target) return;
+  if (target === "after") target = TODAY > WIN ? TODAY : addDays(WIN,1);
+  sel = target; render();
+  document.getElementById("strip").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+
+document.addEventListener("click", e => {
+  const g = e.target.closest("[data-go]"); if (g && !g.disabled) { go(g.dataset.go); return; }
+  const ch = e.target.closest("[data-chip]");
+  if (ch) {
+    const ds = dayState(sel), f = ch.dataset.chip, v = ch.dataset.val;
+    if (ch.hasAttribute("data-multi")) { const a = Array.isArray(ds[f]) ? ds[f] : []; ds[f] = a.includes(v) ? a.filter(x => x !== v) : [...a, v]; }
+    else ds[f] = ds[f] === v ? "" : v;
+    document.querySelectorAll(`[data-chip="${f}"]`).forEach(b => b.setAttribute("aria-pressed", Array.isArray(ds[f]) ? ds[f].includes(b.dataset.val) : ds[f] === b.dataset.val));
+    save(); return;
+  }
+  const rm = e.target.closest("[data-unfave]");
+  if (rm) { state.faves.splice(+rm.dataset.unfave, 1); renderDay(); save(); }
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "faveForm") return;
+  e.preventDefault();
+  const v = document.getElementById("faveIn").value.trim();
+  if (!v) return;
+  state.faves.push(v); renderDay(); save();
+  document.getElementById("faveIn").focus();
+});
+document.addEventListener("change", e => {
+  const c = e.target.dataset && e.target.dataset.c;
+  if (c) { dayState(sel).c[c] = e.target.checked; updateCount(); renderStrip(); save(); }
+  if (e.target.dataset && e.target.dataset.keep !== undefined && sel > WIN) renderDay();
+});
+document.addEventListener("input", e => {
+  const t = e.target; if (!t.dataset) return;
+  if (t.dataset.note !== undefined) dayState(sel).note = t.value;
+  else if (t.dataset.f) dayState(sel)[t.dataset.f] = t.value;
+  else if (t.dataset.review) state.review[t.dataset.review] = t.value;
+  else if (t.dataset.keep !== undefined) state.keep[+t.dataset.keep] = t.value;
+  else return;
+  save();
+});
+
+/* Storage: this browser, plus a downloadable backup file to move between devices */
+const LS = "glowup-spring-2026";
+let timer = null;
+const savedEl = document.getElementById("saved");
+function save() {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    try { localStorage.setItem(LS, JSON.stringify(state)); savedEl.textContent = "Saved in this browser"; }
+    catch (_) { savedEl.textContent = "This browser isn't letting the page save. Try a normal (non-private) window."; }
+  }, 400);
+}
+function merge(s) {
+  if (!s || typeof s !== "object") return;
+  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [] };
+}
+try { merge(JSON.parse(localStorage.getItem(LS) || "null")); } catch (_) {}
+render();
+
+document.getElementById("export").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "glowup-backup-" + TODAY + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  savedEl.textContent = "Backup downloaded";
+});
+const fileIn = document.getElementById("importFile");
+document.getElementById("import").addEventListener("click", () => fileIn.click());
+fileIn.addEventListener("change", async () => {
+  const f = fileIn.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!data || typeof data !== "object" || !data.days) throw new Error();
+    merge(data); render(); save();
+    savedEl.textContent = "Backup restored";
+  } catch (_) { savedEl.textContent = "That file isn't a glow-up backup. Choose the .json file you downloaded."; }
+  fileIn.value = "";
+});
+</script>
+</body>
+</html>
