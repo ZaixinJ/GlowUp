@@ -211,6 +211,9 @@ footer { text-align: center; color: var(--muted); font-size: 13px; display: flex
 .x:hover { color: var(--ink); background: var(--soft); }
 .addrow { display: flex; gap: 8px; }
 .addrow .in { flex: 1; min-width: 0; }
+.sync { margin-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 46ch; margin-inline: auto; }
+.syncpanel { width: 100%; background: var(--soft); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; color: var(--ink); text-align: left; }
+.syncpanel textarea { background: var(--bg); min-height: 70px; font-size: 12px; }
 .backup { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .backup .btn { font-size: 13px; padding: 6px 14px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -296,6 +299,23 @@ body { margin: 0; padding-top: env(safe-area-inset-top, 0px); padding-bottom: en
   <footer>
     <span>Teenagers generally need 8–10 hours of sleep. Protect it.</span>
     <span class="saved" id="saved">Your progress saves in this browser.</span>
+    <div class="sync">
+      <span class="eyebrow">Sync your Mac and phone</span>
+      <span>Tap <b>Copy my data</b> on the device you used last, then <b>Paste my data</b> on the other one.</span>
+      <div class="backup" style="margin-top:4px">
+        <button class="btn" id="copyData">Copy my data</button>
+        <button class="btn" id="pasteData">Paste my data</button>
+      </div>
+      <div class="syncpanel" id="pastePanel" hidden>
+        <label for="pasteBox">Your clipboard couldn't be read automatically. Paste here (long-press, then Paste):</label>
+        <textarea id="pasteBox" rows="3"></textarea>
+        <div class="backup"><button class="btn" id="pasteGo">Use this data</button><button class="btn" data-synccancel>Cancel</button></div>
+      </div>
+      <div class="syncpanel" id="confirmPanel" hidden>
+        <span id="confirmText"></span>
+        <div class="backup"><button class="btn" id="confirmGo">Replace this device's data</button><button class="btn" data-synccancel>Cancel</button></div>
+      </div>
+    </div>
     <div class="backup">
       <button class="btn" id="export">Download backup</button>
       <button class="btn" id="import">Restore from backup</button>
@@ -767,13 +787,14 @@ const savedEl = document.getElementById("saved");
 function save() {
   clearTimeout(timer);
   timer = setTimeout(() => {
+    state.savedAt = Date.now();
     try { localStorage.setItem(LS, JSON.stringify(state)); savedEl.textContent = "Saved in this browser"; }
     catch (_) { savedEl.textContent = "This browser isn't letting the page save. Try a normal (non-private) window."; }
   }, 400);
 }
 function merge(s) {
   if (!s || typeof s !== "object") return;
-  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "" };
+  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "", savedAt: +s.savedAt || 0 };
 }
 try { merge(JSON.parse(localStorage.getItem(LS) || "null")); } catch (_) {}
 render();
@@ -787,6 +808,53 @@ document.getElementById("export").addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   savedEl.textContent = "Backup downloaded";
 });
+/* Sync by clipboard: Copy on one device, Paste on the other (Apple Universal Clipboard carries it across) */
+const SYNC_TAG = "GLOWUP-SYNC:";
+const $ = id => document.getElementById(id);
+let pending = null;
+const when = t => t ? new Date(t).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "an unknown time";
+const filled = st => Object.values(st.days || {}).filter(d => Object.values(d.c || {}).some(Boolean) || (d.note || "").trim() || d.mood).length;
+function closeSync() { $("pastePanel").hidden = true; $("confirmPanel").hidden = true; pending = null; }
+$("copyData").addEventListener("click", async () => {
+  closeSync();
+  if (!state.savedAt) state.savedAt = Date.now();
+  const text = SYNC_TAG + JSON.stringify(state);
+  try { await navigator.clipboard.writeText(text); savedEl.textContent = "Copied. Now tap Paste my data on your other device."; }
+  catch (_) {
+    $("pastePanel").hidden = false; $("pasteBox").value = text; $("pasteBox").select();
+    $("pastePanel").querySelector("label").textContent = "Copy this text (it's already selected), then paste it on your other device:";
+    $("pasteGo").hidden = true;
+  }
+});
+function offer(text) {
+  text = (text || "").trim();
+  if (!text.startsWith(SYNC_TAG)) { savedEl.textContent = "That isn't glow-up data. Tap Copy my data on your other device first."; return; }
+  let data; try { data = JSON.parse(text.slice(SYNC_TAG.length)); } catch (_) { savedEl.textContent = "That data looks incomplete. Copy it again and retry."; return; }
+  if (!data || typeof data !== "object" || !data.days) { savedEl.textContent = "That isn't glow-up data."; return; }
+  pending = data;
+  $("pastePanel").hidden = true;
+  const older = state.savedAt && data.savedAt && data.savedAt < state.savedAt;
+  $("confirmText").textContent = `This data was saved ${when(data.savedAt)} and has ${filled(data)} day${filled(data) === 1 ? "" : "s"} with entries. This device has ${filled(state)}.` +
+    (older ? " Careful: this device was updated more recently, so replacing it would lose newer changes." : "");
+  $("confirmPanel").hidden = false;
+}
+$("pasteData").addEventListener("click", async () => {
+  closeSync();
+  try { offer(await navigator.clipboard.readText()); }
+  catch (_) {
+    $("pastePanel").querySelector("label").textContent = "Your clipboard couldn't be read automatically. Paste here (long-press, then Paste):";
+    $("pasteGo").hidden = false; $("pasteBox").value = ""; $("pastePanel").hidden = false; $("pasteBox").focus();
+  }
+});
+$("pasteGo").addEventListener("click", () => offer($("pasteBox").value));
+$("confirmGo").addEventListener("click", () => {
+  if (!pending) return;
+  const t = pending.savedAt; merge(pending); closeSync(); render();
+  try { localStorage.setItem(LS, JSON.stringify(state)); } catch (_) {}
+  savedEl.textContent = `Synced. This device now matches your data from ${when(t)}.`;
+});
+document.querySelectorAll("[data-synccancel]").forEach(b => b.addEventListener("click", closeSync));
+
 const fileIn = document.getElementById("importFile");
 document.getElementById("import").addEventListener("click", () => fileIn.click());
 fileIn.addEventListener("change", async () => {
