@@ -644,9 +644,9 @@ function special(k) {
       <div class="addrow"><button class="btn" type="submit">Save special day</button><button class="btn" type="button" data-addsp>Cancel</button></div>
     </form></div>`;
   return `<div class="special"><svg viewBox="0 0 120 120" aria-hidden="true">${ART[sp.art] || ART.star}</svg><div class="body">
-    <span class="eyebrow">Special day</span><h3>${esc(sp.title)}</h3>${sp.text ? `<p>${esc(sp.text)}</p>` : ""}
+    <span class="eyebrow">${esc(sp.kicker || "Special day")}</span><h3>${esc(sp.title)}</h3>${sp.text ? `<p>${esc(sp.text)}</p>` : ""}
     ${sp.items.length ? `<div class="group" style="margin-top:6px">${sp.items.map((t, i) => checkRow(k, "sp" + i, t)).join("")}</div>` : ""}
-    <div class="field" style="margin-top:6px"><label for="spnote-${k}">Favourite moment of the day</label><input class="in" id="spnote-${k}" data-f="spnote"></div>
+    <div class="field" style="margin-top:6px"><label for="spnote-${k}">${esc(sp.note || "Favourite moment of the day")}</label><input class="in" id="spnote-${k}" data-f="spnote"></div>
     <div><button class="x" style="font-size:13px" data-delsp>Remove special day</button></div>
   </div></div>`;
 }
@@ -689,7 +689,7 @@ function renderDay() {
       + taskRow(k,"feel","Feel",`<p class="quote">“${esc(x.feel)}”</p>`)
       + taskRow(k,"move","Move",`<p>${esc(x.move)}</p>${x.vid?`<div class="vids"><a class="vid" href="${x.vid[1]}" target="_blank" rel="noopener">YouTube: ${esc(x.vid[0])} ↗</a><a class="vid" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(x.vid[0].replace(" · "," "))}" target="_blank" rel="noopener">Bilibili ↗</a></div>`:""}${workout(k)}`)
       + taskRow(k,"exp","Experiment",`<p>${esc(x.exp)}</p>${x.list?`<ul>${x.list.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`:""}`)
-      + (x.extra ? taskRow(k,"extra","Extra",`<p>${esc(x.extra)}</p>`) : "");
+      + (x.extra ? taskRow(k,"extra","Extra",`<p>${esc(x.extra.replace("your big day", state.festName || "your big day"))}</p>`) : "");
     h += `<div class="tasks">${tasks}</div>` + foundations(k);
     if (isSchool(k)) h += favourites();
     if (x.review) h += reviewBlock();
@@ -797,7 +797,21 @@ function merge(s) {
   state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "", savedAt: +s.savedAt || 0 };
 }
 try { merge(JSON.parse(localStorage.getItem(LS) || "null")); } catch (_) {}
+/* Private link: #add=<data> adds personal special days and your big day's name to this device only.
+   The part after # never reaches the web server, and it is cleared from the address bar once used. */
+let addedMsg = "";
+if (location.hash.startsWith("#add=")) {
+  try {
+    const add = JSON.parse(decodeURIComponent(location.hash.slice(5)));
+    if (add.specials && typeof add.specials === "object") Object.assign(state.specials, add.specials);
+    if (typeof add.festName === "string" && add.festName) state.festName = add.festName;
+    addedMsg = "Your personal days were added to this device.";
+    save();
+  } catch (_) { addedMsg = "That private link looks incomplete. Copy the whole link and try again."; }
+  history.replaceState(null, "", location.pathname + location.search);
+}
 render();
+if (addedMsg) savedEl.textContent = addedMsg;
 
 document.getElementById("export").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
