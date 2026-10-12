@@ -128,6 +128,16 @@ h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.3rem, 8vw
 .morning p { margin: 0; }
 .morning .tip { font-size: 13px; color: var(--muted); }
 @media (max-width: 560px) { .morning { grid-template-columns: 1fr; gap: 16px; } }
+.sched-day { display: flex; flex-direction: column; gap: 6px; }
+.sched-day .label { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--cocoa); }
+.sched-day ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ev { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.ev .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+.ev.off { color: var(--muted); }
+.ev.show { color: var(--court); font-weight: 600; }
+.ev.makeup { font-weight: 600; }
+.sched-day .tip { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.sched .ev { display: inline; border: 0; padding: 0; }
 .spadd { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
 .spform { width: 100%; background: var(--soft); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
 .spform .in, .spform textarea { background: var(--bg); }
@@ -520,7 +530,7 @@ const TODAY = iso(new Date());
 const LAST = DAYS[13].d;
 const WIN = "2026-10-25";
 
-let state = { days:{}, review:{}, keep:["","",""], faves:[], specials:{}, festName:"" };
+let state = { days:{}, review:{}, keep:["","",""], faves:[], specials:{}, festName:"", events:{}, weekly:[] };
 const isSchool = k => ![0,6].includes(parse(k).getDay());
 let sel = TODAY < DAYS[0].d ? DAYS[0].d : TODAY;
 
@@ -553,7 +563,7 @@ function renderStrip() {
   let h = '<span class="weekmark">Week 1 · Nourish &amp; revive</span><span class="weekmark w2">Week 2 · Express &amp; glow</span>';
   DAYS.forEach(x => {
     const dt = parse(x.d), p = progress(x.d);
-    h += `<button class="cell${x.d===TODAY?" today":""}${state.specials[x.d]?" sp":""}" data-go="${x.d}" aria-current="${x.d===sel}" aria-label="${WD[dt.getDay()]} ${dt.getDate()} October, ${p.done} of ${p.total} done">
+    h += `<button class="cell${x.d===TODAY?" today":""}${state.specials[x.d] || (state.events[x.d] || []).some(e => e.kind !== "off") ?" sp":""}" data-go="${x.d}" aria-current="${x.d===sel}" aria-label="${WD[dt.getDay()]} ${dt.getDate()} October, ${p.done} of ${p.total} done">
       <span class="wd">${WD[dt.getDay()].slice(0,2)}</span><span class="n">${dt.getDate()}</span><span class="bar"><i style="width:${p.total?p.done/p.total*100:0}%"></i></span></button>`;
   });
   const wp = progress(WIN);
@@ -621,6 +631,36 @@ const HERO = `<svg class="hero" viewBox="0 0 240 150" aria-hidden="true">
   <g class="note-l" transform="translate(4 40) scale(.5)">${ART.notes}</g>
   <g class="note-r" transform="translate(178 30) scale(.48)">${ART.notes}</g>
 </svg>`;
+/* Private calendar: one-off events by date plus weekly activities, all saved on this device */
+function eventsOn(k) {
+  const dow = parse(k).getDay();
+  const weekly = state.weekly.filter(w => w.dow === dow && (!w.from || k >= w.from) && (!w.until || k <= w.until))
+    .map(w => ({ time: w.time, title: w.title, kind: "weekly", busy: w.busy }));
+  return [...weekly, ...(state.events[k] || [])].sort((a, b) => (a.time || "99").localeCompare(b.time || "99"));
+}
+function schedule(k) {
+  const ev = eventsOn(k); if (!ev.length) return "";
+  const busy = ev.some(e => e.busy);
+  return `<div class="sched-day"><span class="label">Today's schedule</span>
+    <ul>${ev.map(e => `<li class="ev ${e.kind || ""}"><span class="t">${esc(e.time || "")}</span><span>${esc(e.title)}</span></li>`).join("")}</ul>
+    ${busy ? `<p class="tip">Long day. A shorter workout, gentle stretching or rest is completely fine, and pack a proper snack.</p>` : ""}</div>`;
+}
+function upcoming() {
+  const list = Object.keys(state.events).filter(d => d >= TODAY).sort().slice(0, 12);
+  if (!list.length && !state.weekly.length) return "";
+  const fmt = d => { const t = parse(d); return `${WD[t.getDay()]} ${t.getDate()} ${MON[t.getMonth()].slice(0,3)}`; };
+  const DN = ["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"];
+  return `<details id="calDetails"><summary>My calendar</summary><div class="dbody">
+    ${state.weekly.length ? `<p><b>Every week</b></p><ul>${state.weekly.map(w => `<li>${DN[w.dow]} ${esc(w.time)} · ${esc(w.title)}</li>`).join("")}</ul>` : ""}
+    ${list.length ? `<p><b>Coming up</b></p><div class="sched">${list.map(d => state.events[d].map(e => `<span>${fmt(d)}</span><span class="ev ${e.kind || ""}">${esc(e.title)}${e.time ? " · " + esc(e.time) : ""}</span>`).join("")).join("")}</div>` : ""}
+  </div></details>`;
+}
+function renderCalendar() {
+  const old = document.getElementById("calDetails"), html = upcoming();
+  const wasOpen = old && old.open;
+  if (old) old.remove();
+  if (html) { document.querySelector(".guides").insertAdjacentHTML("afterbegin", html); if (wasOpen) document.getElementById("calDetails").open = true; }
+}
 function morning(k) {
   const di = DAYS.findIndex(x => x.d === k);
   const n = Math.round((parse(k) - parse(DAYS[0].d)) / 864e5);
@@ -670,7 +710,7 @@ function festival(k) {
       <div><b>${moved}</b><span>times you moved</span></div>
       <div><b>${outfits}</b><span>outfits you noted</span></div>
     </div>
-    ${morning(k)}${special(k)}
+    ${schedule(k)}${morning(k)}${special(k)}
     <div class="tasks">${taskRow(k,"feel","Feel",`<p class="quote">“I've already done the work. Today I get to shine and have fun.”</p>`)}${tasks}</div>
     ${reflection(k)}
     <div class="nav"><button class="btn" data-go="${LAST}">← Day 14</button><button class="btn" data-go="after">After →</button></div>`;
@@ -684,7 +724,7 @@ function renderDay() {
     const x = DAYS[di];
     const notice = TODAY < DAYS[0].d && di === 0 ? `<div class="notice">Your glow-up starts ${TODAY === addDays(DAYS[0].d,-1) ? "tomorrow" : "on Sunday, 11 October"}. Have a look at Day 1 now.</div>` : "";
     h += `<div class="day-head"><span class="eyebrow">Day ${di+1} · Week ${di<7?"1 · Nourish & revive":"2 · Express & glow"}</span>
-      <h2><em>${esc(x.t)}</em></h2><span class="count">${dateLine}${k===TODAY?" · today":""} · <span id="dc"></span></span></div>${notice}${objects(DAY_ART[di])}${morning(k)}${special(k)}`;
+      <h2><em>${esc(x.t)}</em></h2><span class="count">${dateLine}${k===TODAY?" · today":""} · <span id="dc"></span></span></div>${notice}${objects(DAY_ART[di])}${schedule(k)}${morning(k)}${special(k)}`;
     let tasks = taskRow(k,"eat","Eat",`<p>${esc(x.eat)}</p>`)
       + taskRow(k,"feel","Feel",`<p class="quote">“${esc(x.feel)}”</p>`)
       + taskRow(k,"move","Move",`<p>${esc(x.move)}</p>${x.vid?`<div class="vids"><a class="vid" href="${x.vid[1]}" target="_blank" rel="noopener">YouTube: ${esc(x.vid[0])} ↗</a><a class="vid" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(x.vid[0].replace(" · "," "))}" target="_blank" rel="noopener">Bilibili ↗</a></div>`:""}${workout(k)}`)
@@ -701,7 +741,7 @@ function renderDay() {
   } else {
     const kept = state.keep.map((t,i)=>[t.trim(),i]).filter(p=>p[0]);
     h += `<div class="day-head"><span class="eyebrow">After the fortnight · keep going</span>
-      <h2><em>${dateLine}</em></h2><span class="count">${k===TODAY?"Today · ":""}<span id="dc"></span></span></div>${objects(DEFAULT_ART)}${morning(k)}${special(k)}
+      <h2><em>${dateLine}</em></h2><span class="count">${k===TODAY?"Today · ":""}<span id="dc"></span></span></div>${objects(DEFAULT_ART)}${schedule(k)}${morning(k)}${special(k)}
       <div class="notice">Keep the habits that help you feel well and let go of the ones that feel like pressure. ${kept.length ? "" : "Add the three habits you want to keep below and they'll show up here every day."}</div>`;
     if (kept.length) h += `<div class="tasks">${kept.map(([t,i]) => taskRow(k,"k"+i,"Habit to keep",`<p>${esc(t)}</p>`)).join("")}</div>`;
     h += `<div class="group"><h3>Movement today</h3>${workout(k)}</div>`;
@@ -723,7 +763,7 @@ function updateCount() {
   const p = progress(sel), dc = document.getElementById("dc");
   if (dc) dc.textContent = `${p.done} of ${p.total} little things`;
 }
-function render() { renderStrip(); renderDay(); }
+function render() { renderStrip(); renderDay(); renderCalendar(); }
 
 function go(target) {
   if (!target) return;
@@ -794,7 +834,8 @@ function save() {
 }
 function merge(s) {
   if (!s || typeof s !== "object") return;
-  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "", savedAt: +s.savedAt || 0 };
+  state = { days: s.days || {}, review: s.review || {}, keep: Array.isArray(s.keep) ? s.keep.concat(["","",""]).slice(0,3) : ["","",""], faves: Array.isArray(s.faves) ? s.faves : [], specials: s.specials && typeof s.specials === "object" ? s.specials : {}, festName: typeof s.festName === "string" ? s.festName : "", savedAt: +s.savedAt || 0,
+    events: s.events && typeof s.events === "object" ? s.events : {}, weekly: Array.isArray(s.weekly) ? s.weekly : [] };
 }
 try { merge(JSON.parse(localStorage.getItem(LS) || "null")); } catch (_) {}
 /* Private link: #add=<data> adds personal special days and your big day's name to this device only.
@@ -805,6 +846,11 @@ if (location.hash.startsWith("#add=")) {
     const add = JSON.parse(decodeURIComponent(location.hash.slice(5)));
     if (add.specials && typeof add.specials === "object") Object.assign(state.specials, add.specials);
     if (typeof add.festName === "string" && add.festName) state.festName = add.festName;
+    if (Array.isArray(add.events)) add.events.forEach(([d, time, title, kind]) => {
+      const list = (state.events[d] || []).filter(e => e.title !== title);
+      state.events[d] = [...list, { time, title, kind }];
+    });
+    if (Array.isArray(add.weekly)) add.weekly.forEach(w => { state.weekly = state.weekly.filter(x => x.title !== w.title).concat(w); });
     addedMsg = "Your personal days were added to this device.";
     save();
   } catch (_) { addedMsg = "That private link looks incomplete. Copy the whole link and try again."; }
